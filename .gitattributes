@@ -1,0 +1,15 @@
+# Normalize line endings so diffs stay clean across Windows/macOS/Linux
+* text=auto eol=lf
+
+# Windows-only scripts must keep CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Unix launcher must stay LF
+gradlew text eol=lf
+
+# Binaries
+*.jar binary
+*.png binary
+*.ogg binary
+*.zip binary

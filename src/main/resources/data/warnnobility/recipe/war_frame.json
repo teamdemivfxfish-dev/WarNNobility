@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "pattern": [
+        "SSS",
+        "SPS",
+        "SSS"
+    ],
+    "key": {
+        "S": { "item": "minecraft:stick" },
+        "P": { "item": "minecraft:paper" }
+    },
+    "result": {
+        "id": "warnnobility:war_frame",
+        "count": 6
+    }
+}

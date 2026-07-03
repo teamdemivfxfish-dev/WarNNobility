@@ -1,0 +1,18 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "pattern": [
+        " G ",
+        "GLG",
+        " B "
+    ],
+    "key": {
+        "G": { "item": "minecraft:gold_ingot" },
+        "L": { "item": "minecraft:lectern" },
+        "B": { "item": "minecraft:writable_book" }
+    },
+    "result": {
+        "id": "warnnobility:chancery_table",
+        "count": 1
+    }
+}

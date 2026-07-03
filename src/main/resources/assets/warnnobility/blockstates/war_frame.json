@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "facing=north": { "model": "warnnobility:block/war_frame" },
+        "facing=south": { "model": "warnnobility:block/war_frame", "y": 180 },
+        "facing=east":  { "model": "warnnobility:block/war_frame", "y": 90 },
+        "facing=west":  { "model": "warnnobility:block/war_frame", "y": 270 },
+        "facing=up":    { "model": "warnnobility:block/war_frame", "x": 270 },
+        "facing=down":  { "model": "warnnobility:block/war_frame", "x": 90 }
+    }
+}

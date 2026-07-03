@@ -1,0 +1,82 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "All Rights Reserved"
+
+# Client-only mixin: hides HYW's redundant freecam HUD text (action list + control legend) while our own
+# F4 command HUD is up, so ours replaces it cleanly. required:false in the json -> harmless if HYW is absent.
+[[mixins]]
+config = "warnnobility.mixins.json"
+
+[[mods]]
+modId = "warnnobility"
+version = "1.0.6"
+displayName = "War 'n Nobility"
+authors = "NewtL"
+description = '''
+A noble-rank and vassalage progression system built on the MineColonies + War 'n Taxes + Easy Factions ecosystem. Win War 'n Taxes vassalization wars to take your peers as vassals and climb from outsider to emperor; lead an Easy Factions faction to claim the crown; see your county/duchy/kingdom drawn on the Antique Atlas 4 map. Requires MineColonies, War 'n Taxes, and Easy Factions.
+'''
+
+[[dependencies.warnnobility]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.warnnobility]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+# REQUIRED: the colony system this mod reads for territory and the War 'n Taxes wars that drive seals.
+# War 'n Nobility is built to run on the MineColonies + War 'n Taxes + Easy Factions ecosystem, so these
+# three are hard requirements.
+[[dependencies.warnnobility]]
+modId = "minecolonies"
+type = "required"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+# OPTIONAL (CLIENT side only): the nobility-domain MAP overlay renders on Antique Atlas 4. AA4 on NeoForge
+# is a Fabric mod via Sinytra Connector, so it transitively pulls in connector + forgified-fabric-api +
+# surveyor. AA is reached purely by reflection (no compile dep) and every draw is fail-soft, so when it is
+# absent the map falls back to a plain parchment backdrop and everything else still works.
+[[dependencies.warnnobility]]
+modId = "antique_atlas"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "CLIENT"
+
+# REQUIRED: Machiavelli's War 'n Taxes (its @Mod id is "minecolonytax", NOT "warntaxes"). It runs the wars
+# whose outcomes WarTaxesBridge turns into seals, and it transitively pulls in FTB Teams + MineColonies.
+[[dependencies.warnnobility]]
+modId = "minecolonytax"
+type = "required"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+# OPTIONAL: Easy Factions backs the King gate (lead a faction over the claim threshold) and the faction
+# map overlay. Every reference is isolated behind FactionGate.loaded() so the King gate simply stays
+# dormant when EF is absent; the rest of the nobility ladder runs standalone.
+[[dependencies.warnnobility]]
+modId = "easy_factions"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+# OPTIONAL: Hundred Years War provides the army units + the F4/freecam RTS commander mode our command
+# layer overlays (HywF4Bridge reads its SelectionHandler; F4CommandHud draws the CoH-style HUD on top).
+# All HYW access is reflection + fail-soft (and the HUD mixins are required:false), so when it is absent
+# the War Frame just shows no field units and the command layer stays dormant.
+[[dependencies.warnnobility]]
+modId = "hundred_years_war"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"

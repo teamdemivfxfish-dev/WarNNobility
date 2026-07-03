@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>War 'n Nobility - Feature Sheet</title>
+<style>
+  :root { --accent:#4a2c6b; --accent-soft:#ece6f3; --accent-deep:#33204d; --gold:#9a7d1e; }
+  @page { size: A4; margin: 16mm 15mm; }
+  * { box-sizing: border-box; }
+  body { font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; color:#1c1c1c; line-height:1.46; font-size:10.5pt; margin:0; }
+  .cover { text-align:center; padding:26px 20px 20px; margin-bottom:18px; border:2px solid var(--accent); border-radius:10px; background:linear-gradient(180deg,#f9f7fb 0%,var(--accent-soft) 100%); }
+  .cover h1 { font-size:27pt; margin:0 0 4px; letter-spacing:.5px; color:var(--accent-deep); }
+  .cover .sub { font-size:12pt; color:var(--accent); font-style:italic; margin-bottom:10px; }
+  .cover .meta { font-size:9.5pt; color:#555; }
+  .cover .meta b { color:#222; }
+  .badges { margin-top:9px; }
+  .badge { display:inline-block; font-size:8pt; font-weight:700; letter-spacing:.4px; padding:2px 8px; border-radius:10px; text-transform:uppercase; margin:0 3px; }
+  .built { background:#5a3aa0; color:#fff; }
+  .note { background:#9a7d1e; color:#fff; }
+  h2 { font-size:13.5pt; margin:20px 0 5px; padding-bottom:5px; border-bottom:2px solid var(--accent); color:var(--accent-deep); }
+  h3 { font-size:11pt; margin:12px 0 3px; color:#2a2a2a; }
+  p { margin:5px 0; }
+  .lead { color:#3a3a3a; }
+  .principle { background:var(--accent-soft); border-left:4px solid var(--accent); padding:8px 12px; margin:8px 0; border-radius:0 6px 6px 0; }
+  .principle b { color:var(--accent-deep); }
+  ul { margin:4px 0; padding-left:19px; }
+  li { margin:2px 0; }
+  .what { color:#444; }
+  table { width:100%; border-collapse:collapse; font-size:9pt; margin:6px 0; }
+  th { background:var(--accent); color:#fff; text-align:left; padding:4px 7px; }
+  td { border:1px solid #ddd2ea; padding:4px 7px; vertical-align:top; }
+  tr:nth-child(even) td { background:#f8f5fb; }
+  .tag { color:var(--accent); font-weight:600; }
+  .looks { color:var(--gold); font-style:italic; font-size:8.5pt; }
+  .grid { border-collapse:collapse; margin:4px 0; }
+  .grid td { width:42px; height:42px; border:1px solid #b9a9cf; text-align:center; vertical-align:middle; font-size:8pt; background:#f8f5fb; line-height:1.05; }
+  .grid td.e { background:#e7e0ef; color:#b8aec6; }
+  .gridwrap { display:inline-block; margin:6px 34px 6px 0; vertical-align:top; }
+  .gridwrap .cap { font-size:9.5pt; font-weight:700; color:var(--accent-deep); margin-bottom:4px; }
+  .ladder { text-align:center; font-size:10.5pt; font-weight:600; color:var(--accent-deep); background:var(--accent-soft); border-radius:7px; padding:9px 8px; margin:8px 0; line-height:1.7; }
+  .ladder .arrow { color:var(--gold); font-weight:700; margin:0 5px; }
+  .footer { margin-top:20px; padding-top:9px; border-top:1px solid #ccc; font-size:8.5pt; color:#888; text-align:center; }
+  .nobreak { page-break-inside:avoid; }
+  .pagebreak { page-break-before:always; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>War &rsquo;n Nobility</h1>
+  <div class="sub">a living ladder of rank, seals and vassalage for the MineColonies world</div>
+  <div class="meta">NeoForge 1.21.1 &nbsp;|&nbsp; modid <b>warnnobility</b> &nbsp;|&nbsp; v1.0.0 &nbsp;|&nbsp; by NewtL</div>
+  <div class="badges">
+    <span class="badge built">Alpha</span>
+    <span class="badge note">requires MineColonies + War &rsquo;n Taxes + Easy Factions + Antique Atlas 4</span>
+  </div>
+</div>
+
+<p class="lead">War &rsquo;n Nobility lays a CK-style ladder of noble rank over your server. You begin an
+Outsider and you climb, but you cannot climb alone: every step up is paid for by the <b>seals</b> of your
+peers, and a peer who seals to you becomes your sworn <b>vassal</b>. Win their loyalty by the sword through
+<b>War &rsquo;n Taxes</b> vassalization wars, take a faction&rsquo;s claims with <b>Easy Factions</b> to earn the
+crown, and watch your county, duchy and kingdom drawn on the map. The mod owns the <i>progression and the
+relationships</i>; the wars and the colonies come from the ecosystem it sits on.</p>
+
+<div class="principle"><b>How it fits together:</b> MineColonies gives the colonies and the land. War &rsquo;n
+Taxes runs the vassalization wars whose outcomes become your seals. Easy Factions backs the road to King and
+draws faction borders. Antique Atlas 4 is the map your realm is painted onto. War &rsquo;n Nobility is the title
+and the loyalty graph that ties them together.</div>
+
+<h2>The Ladder</h2>
+<div class="nobreak">
+  <div class="ladder">
+    Outsider <span class="arrow">&rsaquo;</span> Artisan <span class="arrow">&rsaquo;</span> Knight
+    <span class="arrow">&rsaquo;</span> Baron <span class="arrow">&rsaquo;</span> Count
+    <span class="arrow">&rsaquo;</span> Duke <span class="arrow">&rsaquo;</span> King
+    <span class="arrow">&rsaquo;</span> Emperor
+  </div>
+  <p class="what">Each tier is earned a different way, so the lower rungs are granted by the world and the
+  upper rungs are won from other players:</p>
+  <ul>
+    <li><b>Outsider &rsaquo; Artisan &rsaquo; Knight &rsaquo; Baron</b> are <span class="tag">granted</span>. An
+    admin, an NPC, or a quest awards them (joining the realm, taking up a trade, being knighted after a boss,
+    being made a Baron). You cannot self-promote through these; the server decides when you have earned them.</li>
+    <li><b>Baron &rsaquo; Count</b> needs <span class="tag">2 seals</span> from fellow Barons.</li>
+    <li><b>Count &rsaquo; Duke</b> needs <span class="tag">2 seals</span> from fellow Counts.</li>
+    <li><b>Duke &rsaquo; King</b> is the <span class="tag">Crown</span> gate, the hardest step in the mod:
+    2 seals from fellow Dukes, <i>and</i> you must lead an Easy Factions faction holding at least the claim
+    threshold (50 chunks by default), <i>and</i> you must craft and consume a Crown. See "The Crown" below.</li>
+    <li><b>King &rsaquo; Emperor</b> is the throne. The <b>first King ever crowned is automatically raised to
+    Emperor</b> (the empire was an empty throne waiting for its first claimant). After that, the crown only
+    changes hands by usurpation.</li>
+  </ul>
+  <p class="what">The whole ladder is config-driven (names, requirements, and the how-to-advance text of every
+  rank can be edited), so a server can reshape the titles to its own setting.</p>
+</div>
+
+<h2>Seals &amp; Vassalage</h2>
+<div class="nobreak">
+  <p class="what">A <b>seal</b> is one peer of your own rank pledging their support to you. It is the currency of
+  every ascension from Count upward.</p>
+  <ul>
+    <li>You hold <b>one outgoing pledge at a time</b>: you seal to a single peer, and you can withdraw it while
+    it is voluntary.</li>
+    <li>When that peer gathers enough seals and <b>ascends, every one of their sealers becomes a sworn vassal</b>,
+    and their collected vassals become a County, a Duchy, or a Kingdom under them.</li>
+    <li>Seals are <b>rank-enforced</b>: you can only seal to someone of your own current rank, so a realm is
+    built rung by rung, not skipped.</li>
+    <li>A <b>forced seal</b> is won by the sword, not given. It cannot be withdrawn, and it converts to a vassal
+    bond on the victor&rsquo;s ascension just like a voluntary one. This is how war feeds the ladder (below).</li>
+  </ul>
+  <p class="what"><b>Vassal sentence (anti-cheese):</b> a fresh vassal is bound for a set window (7 days by
+  default, or pinned to the war&rsquo;s own subjugation period) and cannot simply walk away; a liege or an admin
+  can release them early. Losing vassals does <i>not</i> strip your title: once a Duke, the de jure rank sticks
+  even if your duchy thins out.</p>
+</div>
+
+<h2>Winning Vassals: War &rsquo;n Taxes</h2>
+<div class="nobreak">
+  <p class="what">War &rsquo;n Nobility does not run the wars itself; it <b>consumes the outcome of War &rsquo;n
+  Taxes</b>. When you win a vassalization war against a same-rank peer, that victory is turned into a forced seal
+  automatically, your enemy becomes your vassal for the duration the war dictates.</p>
+  <ul>
+    <li>A bridge polls the colonies a few times a minute and mirrors War &rsquo;n Taxes&rsquo; vassal state into
+    nobility seals, so you never touch a command: win the war, gain the vassal.</li>
+    <li>It also reads War &rsquo;n Taxes&rsquo; own <b>Diplomacy screen</b> (Colony Tax Management &rsaquo;
+    Diplomacy: Overlords / Vassals). Vassalize a peer directly there and the seal appears; set them back to
+    Independent and the seal releases.</li>
+    <li>Only <b>same-rank peer</b> vassalizations become a legal ladder seal; a cross-rank subjugation is recorded
+    but does not advance your title (you climb among equals).</li>
+  </ul>
+  <p class="what"><b>Note:</b> War &rsquo;n Taxes requires FTB Teams at runtime to run its wars, so any server using
+  this integration needs FTB Teams installed alongside it.</p>
+</div>
+
+<h2 class="pagebreak">The Crown: Becoming King</h2>
+<div class="nobreak">
+  <p class="what">A Duke does not simply seal his way to a throne. Three things must all be true at once:</p>
+  <ul>
+    <li><b>2 Duke seals</b>, the support of your fellow Dukes, as with every prior step.</li>
+    <li><b>A faction&rsquo;s land.</b> You must lead an <b>Easy Factions</b> faction that holds at least the claim
+    threshold (50 claimed chunks by default). Crowns rest on territory, not just titles.</li>
+    <li><b>The Crown itself</b>, crafted and consumed at the coronation.</li>
+  </ul>
+  <h3>The Crown &amp; its Shard <span class="looks">crafted from a rare drop</span></h3>
+  <p class="what">The <b>Shard from the Crown of Unification</b> has no recipe; it is awarded by admins or dropped
+  by the bosses of the POIs &amp; Raid Bosses mod, so the road to a crown runs through a real challenge. Combine
+  the Shard with gold to forge the <b>Crown</b>, which is consumed when you are made King. If Easy Factions is
+  absent, the faction half of the gate is skipped so the mod still works standalone, but on a full server the
+  faction claim is part of the price.</p>
+</div>
+
+<h2>The Emperor &amp; Usurpation</h2>
+<div class="nobreak">
+  <p class="what">There is one throne. The first King to ever rise takes it unopposed; after that, the only way to
+  the imperial crown is to <b>take it</b>. A challenger must satisfy <b>all three</b> conditions:</p>
+  <ul>
+    <li><b>Seize every Duke the Emperor holds</b>, that is, vassalize all of the Dukes who answer directly to the
+    sitting Emperor (the mod tracks this for you).</li>
+    <li><b>Hold the throne claim</b>, an admin/war flag marking the seat of power as yours.</li>
+    <li><b>Win the war</b>, the decisive-victory flag.</li>
+  </ul>
+  <p class="what">With all three met, the usurpation succeeds: the crown passes, and the old Emperor falls back to
+  King. A live checklist shows a challenger exactly which of the three conditions they have, and which they still
+  lack.</p>
+</div>
+
+<h2>The Chancery Table</h2>
+<div class="nobreak">
+  <p class="what">The <b>Chancery Table</b> (a lectern bearing a book) is your seat of governance. Right-click it
+  to open the Chancery, with three tabs:</p>
+  <ul>
+    <li><b>Court:</b> your current standing and what it takes to rise; advance when you are eligible; pledge a
+    <b>seal</b> to a same-rank peer; and, as a Count or higher, name your county, duchy or realm.</li>
+    <li><b>Settings:</b> the <b>Identify as Man / Woman</b> toggle, which switches your title between its
+    masculine and feminine forms everywhere.</li>
+    <li><b>Special Titles:</b> reserved for bespoke honours, a place for future custom titles.</li>
+  </ul>
+  <p class="what"><b>Solo-testing note:</b> the seal buttons need other same-rank players online to pledge to, so
+  the seal flow is a multiplayer feature.</p>
+</div>
+
+<h2>Titles, Gender &amp; Domains</h2>
+<div class="nobreak">
+  <ul>
+    <li><b>Your title on your name:</b> a gold <span class="tag">[Title]</span> prefix rides in front of your name
+    in chat and on the tab list. (Floating nameplates above the head stay plain.)</li>
+    <li><b>Feminine titles:</b> every rank has a feminine form, Dame, Baroness, Countess, Duchess, Queen, Empress,
+    chosen by the Identify-as toggle (or the <span class="tag">/nobility gender</span> command) and used
+    consistently across chat, tab and death messages.</li>
+    <li><b>Name your domain:</b> a Count and above can name their county, duchy or realm; the name is stored and
+    feeds the borders drawn on the map.</li>
+  </ul>
+</div>
+
+<h2>The Domain Map</h2>
+<div class="nobreak">
+  <p class="what">Open the <b>Antique Atlas 4</b> map and your political world is drawn over the terrain. Toggle
+  buttons on the map switch five overlays on and off:</p>
+  <ul>
+    <li><b>Colonies</b>, the raw MineColonies claims.</li>
+    <li><b>Counties, Duchies, Kingdoms</b>, the claims aggregated up your vassal tree, so a kingdom&rsquo;s border
+    is the sum of all the land its barons and counts hold, drawn as coloured pencil-edge borders with a name label
+    at the heart of each.</li>
+    <li><b>Factions</b>, Easy Factions claims as their own coloured layer, each faction tinted its own colour and
+    labelled.</li>
+  </ul>
+  <p class="what">The map overlay is client-rendered and needs MineColonies and Antique Atlas present; without
+  them, the rest of the mod still runs.</p>
+</div>
+
+<h2 class="pagebreak">Commands</h2>
+<p class="what">Administrative commands (operator / permission level 2). v1 addresses online players.</p>
+<table>
+  <tr><th>Command</th><th>What it does</th></tr>
+  <tr><td>/nobility promote / demote &lt;player&gt;</td><td>Move a player one rank up or down the ladder</td></tr>
+  <tr><td>/nobility setrank &lt;player&gt; &lt;rank&gt;</td><td>Force any rank, ignoring requirements (accepts the masculine or feminine name)</td></tr>
+  <tr><td>/nobility gender &lt;player&gt; male|female</td><td>Set which title form a player uses</td></tr>
+  <tr><td>/nobility domain &lt;player&gt; &lt;name&gt;|clear</td><td>Name or clear a player&rsquo;s county / duchy / realm</td></tr>
+  <tr><td>/nobility directive &lt;rank&gt; &lt;text&gt;|clear</td><td>Override a rank&rsquo;s how-to-advance text, live and persisted</td></tr>
+  <tr><td>/nobility seal / unseal</td><td>Place or remove a peer seal by hand</td></tr>
+  <tr><td>/nobility subjugate &lt;aggressor&gt; &lt;defender&gt;</td><td>The war-outcome hook: a forced seal (what War &rsquo;n Taxes calls)</td></tr>
+  <tr><td>/nobility vassal release|leave</td><td>A liege frees a vassal, or a vassal departs once the sentence ends</td></tr>
+  <tr><td>/nobility emperor throne|war|usurp|status &lt;challenger&gt;</td><td>Set the throne/war flags, attempt a usurpation, or read the 3-point checklist</td></tr>
+  <tr><td>/nobility setscore &lt;player&gt; / info</td><td>Adjust the dormant score field; print a player&rsquo;s nobility record</td></tr>
+</table>
+
+<h2>Required Mods &amp; Integrations</h2>
+<table>
+  <tr><th>Mod</th><th>Why it is required</th></tr>
+  <tr><td>MineColonies</td><td>The colonies and the land the whole realm is built on; the reason this is a NeoForge mod</td></tr>
+  <tr><td>War &rsquo;n Taxes <span class="looks">(modid minecolonytax)</span></td><td>Runs the vassalization wars whose victories become your seals; needs FTB Teams at runtime</td></tr>
+  <tr><td>Easy Factions</td><td>Backs the road to King (the faction-claim gate) and draws faction borders on the map</td></tr>
+  <tr><td>Antique Atlas 4 <span class="looks">(client side)</span></td><td>The map your county, duchy, kingdom and faction borders are painted onto</td></tr>
+</table>
+
+<h2>Crafting</h2>
+<div class="nobreak">
+  <div class="gridwrap">
+    <div class="cap">Crown (shaped)</div>
+    <table class="grid">
+      <tr><td>Gold Ingot</td><td>Crown Shard</td><td>Gold Ingot</td></tr>
+      <tr><td>Gold Ingot</td><td>Gold Ingot</td><td>Gold Ingot</td></tr>
+      <tr><td class="e">-</td><td class="e">-</td><td class="e">-</td></tr>
+    </table>
+  </div>
+  <table>
+    <tr><th>Item</th><th>How to obtain</th></tr>
+    <tr><td>Shard from the Crown of Unification</td><td>No recipe: awarded by an admin or dropped by a POIs &amp; Raid Bosses boss</td></tr>
+    <tr><td>Crown</td><td>The Shard + 5 Gold Ingots, shaped as above. Consumed when you are crowned King</td></tr>
+    <tr><td>Chancery Table</td><td>Available in the creative inventory / placed by an admin (no survival recipe yet)</td></tr>
+  </table>
+  <p class="what">Real bespoke art for the Crown, Shard and Chancery Table is planned; the current models are
+  honest placeholders.</p>
+</div>
+
+<div class="footer">War &rsquo;n Nobility &bull; NeoForge 1.21.1 &bull; v1.0.0 (Alpha) &bull; requires MineColonies, War &rsquo;n Taxes, Easy Factions &amp; Antique Atlas 4</div>
+
+</body>
+</html>

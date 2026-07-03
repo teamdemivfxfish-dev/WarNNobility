@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Antique Atlas Map - Test Checklist</title>
+<style>
+  :root { --accent:#4a2c6b; --accent-soft:#ece6f3; --accent-deep:#33204d; --gold:#9a7d1e; }
+  @page { size: A4; margin: 16mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; color:#1c1c1c; line-height:1.45; font-size:10.5pt; margin:0; }
+  .cover { text-align:center; padding:20px 18px 16px; margin-bottom:14px; border:2px solid var(--accent); border-radius:10px; background:linear-gradient(180deg,#f9f7fb 0%,var(--accent-soft) 100%); }
+  .cover h1 { font-size:21pt; margin:0 0 3px; color:var(--accent-deep); }
+  .cover .sub { font-size:10.5pt; color:var(--accent); font-style:italic; }
+  .cover .meta { font-size:9pt; color:#666; margin-top:6px; }
+  .intro { color:#444; margin:4px 2px 14px; }
+  h2 { font-size:12.5pt; margin:18px 0 6px; padding-bottom:4px; border-bottom:2px solid var(--accent); color:var(--accent-deep); }
+  .step { color:var(--gold); font-weight:700; }
+  /* one checklist row */
+  .item { display:flex; align-items:flex-start; margin:11px 0 1px; page-break-inside:avoid; }
+  .box { flex:0 0 auto; width:15px; height:15px; border:1.7px solid var(--accent); border-radius:3px; margin-right:10px; margin-top:1px; background:#fff; }
+  .txt { font-weight:700; color:#1e1e1e; font-size:10.8pt; }
+  /* indented sub-steps under an item, aligned past the box */
+  .sub { margin:1px 0 5px 25px; padding-left:17px; }
+  .sub li { margin:2px 0; color:#454545; font-size:9.7pt; }
+  .sub li b { color:#2a2a2a; }
+  .tag { color:var(--accent); font-weight:600; }
+  .tip { background:var(--accent-soft); border-left:4px solid var(--accent); padding:7px 11px; margin:10px 0; border-radius:0 6px 6px 0; font-size:9.6pt; color:#3a3a3a; }
+  .tip b { color:var(--accent-deep); }
+  .footer { margin-top:18px; padding-top:8px; border-top:1px solid #ccc; font-size:8.5pt; color:#888; text-align:center; }
+  .nobreak { page-break-inside:avoid; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>Antique Atlas Map &ndash; Test Checklist</h1>
+  <div class="sub">getting War &rsquo;n Nobility&rsquo;s domain borders to draw on the map</div>
+  <div class="meta">War &rsquo;n Nobility &bull; NeoForge 1.21.1 &bull; tick each box once it is confirmed working</div>
+</div>
+
+<p class="intro">Work top to bottom. The mods must be right <i>before</i> the world data, and the world data
+must exist <i>before</i> any borders can draw. If a later step fails, the cause is almost always a missed box
+higher up.</p>
+
+<h2><span class="step">Part 1</span> &nbsp;The mods are all present and the game boots</h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Antique Atlas 4 and its Fabric bridge are installed</span></div>
+<ul class="sub">
+  <li>Antique Atlas 4 is a Fabric mod, so on NeoForge it rides on <b>Sinytra Connector</b> and needs the whole bridge stack:</li>
+  <li><b>antique-atlas</b> (the map itself)</li>
+  <li><b>connector</b> (Sinytra Connector)</li>
+  <li><b>forgified-fabric-api</b></li>
+  <li><b>surveyor</b> (Antique Atlas&rsquo;s map-data backend)</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">MineColonies is installed</span></div>
+<ul class="sub">
+  <li>The domain map only runs when MineColonies is present; the whole overlay is gated behind it.</li>
+  <li>Without MineColonies the rest of War &rsquo;n Nobility still works, but <b>no borders will ever draw</b>.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">War &rsquo;n Nobility is installed (the build with the Domain Atlas merged in)</span></div>
+<ul class="sub">
+  <li>Use the NeoForge jar (<b>warnnobility-neoforge-1.0.0.jar</b>); the domain map lives only in the NeoForge build.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Easy Factions is installed (only needed for the Factions layer)</span></div>
+<ul class="sub">
+  <li>Required for the <span class="tag">Factions</span> overlay to appear and draw faction borders.</li>
+  <li>The Colonies / Counties / Duchies / Kingdoms layers do not need it.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">The instance launches all the way to the world with no errors</span></div>
+<ul class="sub">
+  <li>Boot the pack once and reach the title screen, then load into a world.</li>
+  <li><b>Watch for a &ldquo;mod missing dependency&rdquo; crash</b> on the loading screen; if it appears, a mod from Part 1 is absent.</li>
+</ul>
+
+<div class="tip"><b>Heads-up:</b> Sinytra Connector inside a large NeoForge pack can occasionally clash with another
+mod. If the game crashes only after adding the Atlas stack, that bridge is the first suspect, read the crash
+log for &ldquo;connector&rdquo; or &ldquo;fabric&rdquo;.</div>
+
+<h2><span class="step">Part 2</span> &nbsp;The world has something worth drawing</h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">At least one MineColonies colony exists with claimed chunks</span></div>
+<ul class="sub">
+  <li>Place a Town Hall and let the colony claim its surrounding chunks, this is the raw land the borders are built from.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">You are a Count or higher with a named domain</span></div>
+<ul class="sub">
+  <li>Borders aggregate <b>up the vassal tree</b>: barons&rsquo; land sums into a County, counties into a Duchy, duchies into a Kingdom.</li>
+  <li>A plain Baron with no vassals has no county border yet, climb to Count+ first.</li>
+  <li>Name your land at the <b>Chancery Table &rsaquo; Court tab</b>, or with <span class="tag">/nobility domain &lt;you&gt; &lt;name&gt;</span>; the name becomes the label on the map.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">(For the Factions layer) you lead an Easy Factions faction with claimed chunks</span></div>
+<ul class="sub">
+  <li>Found a faction and claim some chunks so the Factions overlay has territory to colour.</li>
+</ul>
+
+<h2><span class="step">Part 3</span> &nbsp;The map draws the borders</h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Open the Antique Atlas map</span></div>
+<ul class="sub">
+  <li>Obtain the Antique Atlas item, then open it with the Antique Atlas keybind (or by right-clicking the atlas).</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">The domain toggle buttons appear on the map</span></div>
+<ul class="sub">
+  <li>Look to the side of the open map for the toggle row.</li>
+  <li>You should see five toggles: <b>Colonies, Counties, Duchies, Kingdoms, Factions</b>.</li>
+  <li>If the toggles are missing entirely, the overlay did not hook in, recheck MineColonies + Antique Atlas in Part 1.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Each overlay actually draws when toggled on</span></div>
+<ul class="sub">
+  <li><b>Colonies</b> &rarr; the raw MineColonies claims fill in.</li>
+  <li><b>Counties / Duchies / Kingdoms</b> &rarr; coloured pencil-edge borders with a name label at the heart of each realm.</li>
+  <li><b>Factions</b> &rarr; each faction tinted its own colour and labelled.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Borders refresh on demand</span></div>
+<ul class="sub">
+  <li>If a border looks stale or missing after you change colonies/ranks, run <span class="tag">/domains refresh</span> and reopen the map.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">The drawn borders match your setup</span></div>
+<ul class="sub">
+  <li>A kingdom&rsquo;s border should equal the sum of all the land its vassals hold.</li>
+  <li>The labels on the map should read the domain names you set in Part 2.</li>
+</ul>
+
+<div class="footer">War &rsquo;n Nobility &bull; Antique Atlas domain-map test checklist &bull; NeoForge 1.21.1</div>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.newtl.warnnobility.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "WarSystemMixin"
+  ],
+  "client": [
+    "HywActionListMixin",
+    "HywMouseControlInfoMixin",
+    "GuiOverlayMessageMixin",
+    "VassalsPageMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

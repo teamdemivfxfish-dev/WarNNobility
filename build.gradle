@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'net.neoforged.moddev' version '2.0.141'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = "${mod_id}-neoforge"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+repositories {
+    mavenCentral()
+}
+
+neoForge {
+    version = neoforge_version
+    mods {
+        warnnobility {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+// The OPTIONAL nobility-domain map (folded-in Domain Atlas) compiles against the MineColonies API.
+// These are compileOnly only - MineColonies is an OPTIONAL runtime dependency (the domain feature stays
+// dormant if it is absent). Antique Atlas 4 is NOT compiled against: it is reached purely by runtime
+// reflection (see domain/client/DomainOverlay), so no atlas jar is needed here.
+//
+// War 'n Taxes (modid "minecolonytax") and Easy Factions (modid "easy_factions") are likewise compileOnly
+// OPTIONAL integrations: the war-outcome bridge (integration/WarTaxesBridge) and the King faction gate
+// (integration/FactionGate) only light up when those mods are present; otherwise nobility runs standalone.
+// Every reference to their classes is isolated behind a ModList.isLoaded gate so a missing jar never links.
+// The dependency jars below are proprietary (MineColonies, War 'n Taxes, Easy Factions + their libs) and
+// are NOT committed to this repo. Point 'deps_dir' at a folder that contains them: set it in your
+// ~/.gradle/gradle.properties (e.g. deps_dir=C:/path/to/mods) or pass -Pdeps_dir=... on the command line.
+// See README -> Building for the exact jar list. The default is NewtL's local instance.
+def instMods = project.findProperty('deps_dir') ?: 'D:/Mods/Instances/Warborn RTS Sandbox/mods'
+dependencies {
+    compileOnly files(
+            "${instMods}/minecolonies-1.1.1319-1.21.1.jar",
+            "${instMods}/structurize-1.0.830-1.21.1.jar",
+            "${instMods}/blockui-1.0.211-1.21.1-snapshot.jar",
+            "${instMods}/domum-ornamentum-1.0.234-snapshot-main.jar",
+            "${instMods}/WarNTaxes-1.21.1-NeoForge-5.0.jar",
+            "${instMods}/easy_factions-NeoForge-1.0.3.jar"
+    )
+}

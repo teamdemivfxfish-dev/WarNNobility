@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>War 'n Nobility - Test Checklist</title>
+<style>
+  :root { --accent:#4a2c6b; --accent-soft:#ece6f3; --accent-deep:#33204d; --gold:#9a7d1e; --twop:#1f6f4a; }
+  @page { size: A4; margin: 15mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; color:#1c1c1c; line-height:1.42; font-size:10.3pt; margin:0; }
+  .cover { text-align:center; padding:18px 18px 14px; margin-bottom:12px; border:2px solid var(--accent); border-radius:10px; background:linear-gradient(180deg,#f9f7fb 0%,var(--accent-soft) 100%); }
+  .cover h1 { font-size:21pt; margin:0 0 3px; color:var(--accent-deep); }
+  .cover .sub { font-size:10.5pt; color:var(--accent); font-style:italic; }
+  .cover .meta { font-size:9pt; color:#666; margin-top:6px; }
+  .legend { font-size:9pt; color:#444; margin:8px 2px 4px; }
+  .intro { color:#444; margin:4px 2px 12px; }
+  h2 { font-size:12pt; margin:16px 0 5px; padding-bottom:4px; border-bottom:2px solid var(--accent); color:var(--accent-deep); }
+  .step { color:var(--gold); font-weight:700; }
+  .item { display:flex; align-items:flex-start; margin:10px 0 1px; page-break-inside:avoid; }
+  .box { flex:0 0 auto; width:15px; height:15px; border:1.7px solid var(--accent); border-radius:3px; margin-right:10px; margin-top:1px; background:#fff; }
+  .txt { font-weight:700; color:#1e1e1e; font-size:10.6pt; }
+  .badge { display:inline-block; font-size:7pt; font-weight:700; letter-spacing:.3px; padding:1px 5px; border-radius:8px; text-transform:uppercase; vertical-align:middle; margin-left:6px; }
+  .b2p { background:var(--twop); color:#fff; }
+  .badmin { background:var(--gold); color:#fff; }
+  .sub { margin:1px 0 4px 25px; padding-left:17px; }
+  .sub li { margin:1px 0; color:#454545; font-size:9.5pt; }
+  .sub li b { color:#2a2a2a; }
+  .tag { color:var(--accent); font-weight:600; }
+  .cmd { font-family:Consolas,"Courier New",monospace; font-size:9pt; color:var(--accent-deep); background:#f1ecf6; padding:0 3px; border-radius:3px; }
+  .tip { background:var(--accent-soft); border-left:4px solid var(--accent); padding:6px 10px; margin:9px 0; border-radius:0 6px 6px 0; font-size:9.4pt; color:#3a3a3a; }
+  .tip b { color:var(--accent-deep); }
+  .footer { margin-top:16px; padding-top:8px; border-top:1px solid #ccc; font-size:8.5pt; color:#888; text-align:center; }
+  .nobreak { page-break-inside:avoid; }
+  .pagebreak { page-break-before:always; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>War &rsquo;n Nobility &ndash; Test Checklist</h1>
+  <div class="sub">a full play-test pass for the rank, seal and vassalage systems</div>
+  <div class="meta">NeoForge 1.21.1 &bull; v1.0.0 (Alpha) &bull; tick each box once confirmed working</div>
+</div>
+
+<p class="legend"><span class="badge b2p">2P</span> needs a second player (your friend) &nbsp;&nbsp;
+<span class="badge badmin">OP</span> needs operator / command access &nbsp;&nbsp; everything else is solo.</p>
+
+<p class="intro">Test in order: get it booting, prove the ranks and titles solo with commands, then bring your
+friend in for the seals, vassalage and war flow, which is the heart of the mod and cannot be tested alone.</p>
+
+<h2><span class="step">Part 1</span> &nbsp;Boot &amp; basics</h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">The pack loads into a world with all required mods</span></div>
+<ul class="sub">
+  <li>MineColonies, War &rsquo;n Taxes, Easy Factions, Antique Atlas 4 (+ its Sinytra bridge), and FTB Teams all present.</li>
+  <li>No &ldquo;missing dependency&rdquo; crash on the loading screen.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">The Chancery Table can be placed and opened</span></div>
+<ul class="sub">
+  <li>Get one from the creative inventory (no survival recipe yet) and place it; it looks like a lectern with a book.</li>
+  <li>Right-click opens the Chancery screen with three tabs: <b>Court</b>, <b>Settings</b>, <b>Special Titles</b>.</li>
+</ul>
+
+<h2><span class="step">Part 2</span> &nbsp;Ranks &amp; titles <span class="badge badmin">OP</span> (solo)</h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Admin promotion walks up the low ranks</span></div>
+<ul class="sub">
+  <li><span class="cmd">/nobility promote &lt;you&gt;</span> steps Outsider &rsaquo; Artisan &rsaquo; Knight &rsaquo; Baron.</li>
+  <li><span class="cmd">/nobility demote</span> steps back down; <span class="cmd">/nobility setrank &lt;you&gt; &lt;rank&gt;</span> jumps straight to any rank.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Players cannot self-advance the granted ranks</span></div>
+<ul class="sub">
+  <li>As a non-op, the Chancery <b>Advance</b> button should refuse the COMMAND steps (Outsider through Baron); only an op/command can grant them.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Your title shows on your name</span></div>
+<ul class="sub">
+  <li>A gold <span class="tag">[Title]</span> prefix appears in <b>chat</b> and on the <b>tab list</b>.</li>
+  <li>(The floating nameplate above your head stays plain by design.)</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Feminine titles work</span></div>
+<ul class="sub">
+  <li>Toggle in <b>Chancery &rsaquo; Settings</b> (Identify as Man/Woman) or <span class="cmd">/nobility gender &lt;you&gt; female</span>.</li>
+  <li>Title switches to Dame / Baroness / Countess / Duchess / Queen / Empress everywhere it shows.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Domain naming works (Count and above)</span></div>
+<ul class="sub">
+  <li>Once Count+, name your land in <b>Chancery &rsaquo; Court</b> or with <span class="cmd">/nobility domain &lt;you&gt; &lt;name&gt;</span>.</li>
+  <li>This name is what later labels your borders on the map.</li>
+</ul>
+
+<h2><span class="step">Part 3</span> &nbsp;Seals &amp; vassalage <span class="badge b2p">2P</span></h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">A peer can seal to you</span></div>
+<ul class="sub">
+  <li>Both players at the <b>same rank</b> (e.g. both Barons, use <span class="cmd">/nobility setrank</span> to line them up).</li>
+  <li>Your friend pledges via the Chancery <b>Pledge-seal</b> button, or <span class="cmd">/nobility seal</span>; only one outgoing pledge each at a time.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Enough seals trigger ascension and create vassals</span></div>
+<ul class="sub">
+  <li>Gather <b>2 same-rank seals</b> (Baron &rarr; Count, then Count &rarr; Duke).</li>
+  <li>On ascension every sealer becomes your sworn <b>vassal</b>, forming your County / Duchy.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">The vassal sentence holds</span></div>
+<ul class="sub">
+  <li>A fresh vassal <b>cannot leave</b> (<span class="cmd">/nobility vassal leave</span>) until the sentence elapses (default 7 days).</li>
+  <li>A liege or op can free them early with <span class="cmd">/nobility vassal release</span>.</li>
+  <li>Losing a vassal should <b>not</b> demote you, the title sticks.</li>
+</ul>
+
+<h2 class="pagebreak"><span class="step">Part 4</span> &nbsp;War &rsquo;n Taxes integration <span class="badge b2p">2P</span></h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Winning a vassalization war becomes a seal automatically</span></div>
+<ul class="sub">
+  <li>Against a <b>same-rank peer</b>, win a War &rsquo;n Taxes vassalization war; within a few seconds it should appear as a forced seal (you did not run any nobility command).</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">The War &rsquo;n Taxes Diplomacy screen mirrors both ways</span></div>
+<ul class="sub">
+  <li>In Colony Tax Management &rsaquo; <b>Diplomacy</b>, vassalize a peer directly &rarr; the seal appears.</li>
+  <li>Set them back to <b>Independent</b> &rarr; the seal releases.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Cross-rank subjugation does NOT create a ladder seal</span></div>
+<ul class="sub">
+  <li>Vassalizing someone of a different rank is recorded but must not advance your title, you only climb among equals.</li>
+</ul>
+
+<h2><span class="step">Part 5</span> &nbsp;The Crown &amp; becoming King</h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">The Crown can be crafted</span></div>
+<ul class="sub">
+  <li>Get a <b>Shard from the Crown of Unification</b> (no recipe, give it via creative/op or drop it from a POIs &amp; Raid Bosses boss).</li>
+  <li>Craft the Shard + 5 Gold Ingots (shard top-centre, gold around) into a <b>Crown</b>.</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">The King gate enforces all three conditions <span class="badge b2p">2P</span></span></div>
+<ul class="sub">
+  <li>As a Duke you need: <b>2 Duke seals</b>, <b>and</b> you lead an Easy Factions faction over the claim threshold (50 chunks), <b>and</b> you consume the Crown.</li>
+  <li>Missing any one should block the promotion with a message saying which.</li>
+</ul>
+
+<h2><span class="step">Part 6</span> &nbsp;Emperor &amp; usurpation <span class="badge badmin">OP</span></h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">The first King is auto-crowned Emperor</span></div>
+<ul class="sub">
+  <li>The very first player to reach King should immediately become Emperor (the empty throne).</li>
+</ul>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Usurpation needs all three conditions</span></div>
+<ul class="sub">
+  <li>Set the flags: <span class="cmd">/nobility emperor throne &lt;challenger&gt; true</span> and <span class="cmd">... war &lt;challenger&gt; true</span>.</li>
+  <li>The challenger must also have seized every Duke that answers directly to the Emperor.</li>
+  <li><span class="cmd">/nobility emperor status &lt;challenger&gt;</span> shows the <b>[x]/[ ] checklist</b>; <span class="cmd">... usurp</span> only swaps the crown when all three are met (old Emperor drops to King).</li>
+</ul>
+
+<h2><span class="step">Part 7</span> &nbsp;The Domain Atlas map</h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Borders draw on the Antique Atlas</span></div>
+<ul class="sub">
+  <li>Open the Antique Atlas; the toggles <b>Colonies / Counties / Duchies / Kingdoms / Factions</b> appear.</li>
+  <li>Toggle each and confirm coloured borders + name labels draw; <span class="cmd">/domains refresh</span> if stale.</li>
+  <li><b>Full map-specific steps are on the separate</b> &ldquo;Antique Atlas Map - Test Checklist&rdquo; <b>PDF.</b></li>
+</ul>
+
+<h2><span class="step">Part 8</span> &nbsp;Persistence</h2>
+
+<div class="item nobreak"><span class="box"></span><span class="txt">Everything survives a restart</span></div>
+<ul class="sub">
+  <li>Quit fully and reload the world: ranks, titles, vassals, domain names, and the Emperor should all persist (stored in <span class="cmd">warnnobility.dat</span>).</li>
+</ul>
+
+<div class="tip"><b>Solo vs friend:</b> Parts 1, 2, 5 (crafting), 7 and 8 you can run alone with op commands. Parts 3, 4
+and the King gate in Part 5 are the multiplayer heart, that is what the second player is for.</div>
+
+<div class="footer">War &rsquo;n Nobility &bull; full play-test checklist &bull; NeoForge 1.21.1 &bull; v1.0.0 Alpha</div>
+
+</body>
+</html>
