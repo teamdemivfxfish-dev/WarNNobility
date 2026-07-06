@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MineColonies: War 'n Nobility — Features</title>
+<style>
+  :root{
+    --ink:#1f2d3a; --head:#22303c; --muted:#5a6b78; --faint:#6b7a86;
+    --rule:#e6ebee; --card:#c9d4dd; --steel:#3f5b6b; --zebra:#f6f8f9;
+    --box:#f5f7f9; --boxbd:#e0e6ea; --callbg:#eef3f6; --callbar:#3a6b8c;
+    --badge:#2f7d4f;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  body{
+    font-family:"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink); background:#fff; line-height:1.55;
+    max-width:820px; margin:0 auto; padding:34px 30px 60px;
+    font-size:15px;
+  }
+  .card{
+    border:1px solid var(--card); border-radius:10px;
+    padding:30px 28px; text-align:center; margin-bottom:26px;
+  }
+  .card h1{
+    margin:0; font-size:40px; font-weight:800; color:var(--head);
+    letter-spacing:.3px; line-height:1.1;
+  }
+  .card .subtitle{ font-style:italic; color:var(--muted); font-size:17px; margin:10px 0 0; }
+  .card .meta{ font-size:13.5px; color:var(--faint); margin:14px 0 0; }
+  .card .meta b{ color:var(--head); }
+  .badge{
+    display:inline-block; margin-top:14px; background:var(--badge); color:#fff;
+    font-size:11.5px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase;
+    padding:6px 15px; border-radius:20px;
+  }
+  h2{
+    font-size:22px; color:var(--head); border-bottom:2px solid var(--head);
+    padding-bottom:6px; margin:36px 0 14px;
+  }
+  h3{ font-size:16px; color:var(--head); margin:24px 0 6px; }
+  p{ margin:10px 0; }
+  .callout{
+    background:var(--callbg); border-left:4px solid var(--callbar);
+    padding:13px 18px; border-radius:4px; margin:18px 0;
+  }
+  .recipe{
+    display:inline-block; font-family:"Consolas","Courier New",monospace;
+    background:var(--box); border:1px solid var(--boxbd); border-radius:5px;
+    padding:12px 18px; line-height:1.65; letter-spacing:5px; font-size:15px;
+    white-space:pre;
+  }
+  .legend{ font-size:13px; color:var(--faint); margin:4px 0 0; }
+  table{ width:100%; border-collapse:collapse; font-size:14px; margin:10px 0 20px; }
+  thead th{
+    background:var(--steel); color:#fff; text-align:left; padding:8px 12px;
+    font-weight:600; font-size:13.5px;
+  }
+  tbody td{ padding:8px 12px; border-bottom:1px solid var(--rule); vertical-align:top; }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  td .def{ color:var(--faint); }
+  code{
+    background:#eef1f3; padding:1px 5px; border-radius:3px;
+    font-family:"Consolas","Courier New",monospace; font-size:90%;
+  }
+  ul{ margin:10px 0; padding-left:22px; }
+  li{ margin:5px 0; }
+  .footer{
+    text-align:center; color:#9aa7b0; font-size:12px;
+    margin-top:44px; border-top:1px solid var(--rule); padding-top:16px;
+  }
+  @page{ margin:14mm; }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>MineColonies: War 'n Nobility</h1>
+    <p class="subtitle">A configurable noble-rank and vassalage progression layer for MineColonies.</p>
+    <p class="meta">NeoForge 21.1.233 &middot; Minecraft 1.21.1 &nbsp;|&nbsp; modid <b>warnnobility</b> &nbsp;|&nbsp; v1.0.6 &nbsp;|&nbsp; by Barunn (NewtL) &nbsp;|&nbsp; needs MineColonies + War 'n Taxes</p>
+    <span class="badge">Live on CurseForge</span>
+  </div>
+
+  <p>War 'n Nobility turns a MineColonies server into a feudal ladder. Players climb an eight-rung
+  title ladder, from Outsider to Emperor, by collecting <b>seals</b> of fealty from their peers.
+  Voluntary seals are pledged in the Chancery; forced seals are taken by winning <b>War 'n Taxes</b>
+  vassalization wars, so the wars a rival system actually fights are what promote you. Your growing
+  county, duchy, or realm is drawn on the Antique Atlas map, decrees are issued from a Chancery Table
+  block, and campaigns are planned on a wall-mounted War Table. The mod never edits another mod's code:
+  every integration is reflection or a fail-soft Mixin that lives in this jar, so the ladder still runs
+  when the optional partners are absent.</p>
+
+  <div class="callout"><b>Everything is config.</b> The ranks, their requirements, the vassal sentence,
+  and the King gate are all in <code>warnnobility-common.toml</code>. The mechanics follow the
+  requirement column, not the title text, so you can rename titles or reshape the whole ladder without
+  touching code.</div>
+
+  <h2>Supported Versions</h2>
+  <table>
+    <thead><tr><th>Loader</th><th>Minecraft</th><th>Mod version</th><th>Folder</th></tr></thead>
+    <tbody>
+      <tr><td>NeoForge</td><td>1.21.1</td><td>1.0.6</td><td><code>/</code> (primary)</td></tr>
+      <tr><td>Forge</td><td>1.21.1</td><td>1.0.0</td><td>Forge variant (<code>WarNNobility</code>)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Crafting &amp; Items</h2>
+
+  <h3>Chancery Table</h3>
+  <p>The noble's console block.</p>
+  <div class="recipe"> G
+G L G
+ B </div>
+  <p class="legend">G = Gold Ingot &nbsp;&bull;&nbsp; L = Lectern &nbsp;&bull;&nbsp; B = Writable Book</p>
+
+  <h3>War Frame</h3>
+  <p>One panel of the War Table; the recipe makes six.</p>
+  <div class="recipe">S S S
+S P S
+S S S</div>
+  <p class="legend">S = Stick &nbsp;&bull;&nbsp; P = Paper</p>
+
+  <h3>Crown</h3>
+  <p>The regalia consumed when a Duke claims the throne.</p>
+  <div class="recipe">G S G
+G G G</div>
+  <p class="legend">G = Gold Ingot &nbsp;&bull;&nbsp; S = Shard from the Crown of Unification</p>
+
+  <p>The <b>Shard from the Crown of Unification</b> has no recipe on purpose. It is meant to be
+  admin-granted or dropped by an out-of-band event (for example the POIs &amp; Raid Bosses mod), so
+  reaching King always needs more than crafting. Blocks appear in the Functional Blocks creative tab;
+  the Shard and Crown appear in Ingredients.</p>
+
+  <table>
+    <thead><tr><th>Item</th><th>Display name</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>chancery_table</code></td><td>Chancery Table</td><td>Right-click to open your noble console</td></tr>
+      <tr><td><code>war_frame</code></td><td>War Frame</td><td>Item-frame-style panel; a 3x3 grid plus an atlas becomes a War Table</td></tr>
+      <tr><td><code>crown_shard</code></td><td>Shard from the Crown of Unification</td><td>No recipe; admin- or event-granted</td></tr>
+      <tr><td><code>crown</code></td><td>Crown</td><td>Crafted from a Shard; the King gate</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Controls</h2>
+  <p>This mod registers no keybinds of its own. It is driven by block interactions, and its RTS command
+  layer reads Hundred Years War's own keys so the on-screen HUD always teaches your actual bindings.</p>
+  <table>
+    <thead><tr><th>Action</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>Open your noble console</td><td>Right-click a <b>Chancery Table</b></td></tr>
+      <tr><td>Mount a War Frame</td><td>Use an atlas on a completed, like-facing 3x3 War Frame grid</td></tr>
+      <tr><td>Open the War Table planner</td><td>Right-click the War Table anchor frame</td></tr>
+      <tr><td>Rotate a flat War Table</td><td>Shift + right-click the table</td></tr>
+      <tr><td>View domain borders</td><td>Open the Antique Atlas map</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Mechanics</h2>
+
+  <h3>The nobility ladder</h3>
+  <p>The default ladder, lowest first, is <code>Outsider &rarr; Artisan &rarr; Knight &rarr; Baron
+  &rarr; Count &rarr; Duke &rarr; King &rarr; Emperor</code>. Each rank declares how you <i>enter</i>
+  it:</p>
+  <table>
+    <thead><tr><th>Requirement</th><th>How you advance into the rank</th></tr></thead>
+    <tbody>
+      <tr><td><code>COMMAND</code></td><td>Just <code>/nobility promote</code> (hook quests, NPCs, or boss kills here). The early ranks use this</td></tr>
+      <tr><td><code>SUPPORT</code></td><td>A number of same-rank peers must pledge their seal to you; on promotion those sealers become your sentenced vassals</td></tr>
+      <tr><td><code>BUYIN</code></td><td>Pay a configured item, consumed on promotion (unused by the default ladder)</td></tr>
+      <tr><td><code>SCORE</code></td><td>Your score must have reached a threshold (unused by the default ladder)</td></tr>
+      <tr><td><code>CROWN</code></td><td>The King step: collect Duke seals, lead an Easy Factions faction over the claim threshold, and consume a Crown</td></tr>
+      <tr><td><code>HIGHEST</code></td><td>The Emperor seat. The first King is crowned automatically; after that the throne changes only by usurpation</td></tr>
+    </tbody>
+  </table>
+  <p>In the default ladder Count needs 2 Baron seals, Duke needs 2 Count seals, and King needs 2 Duke
+  seals. Each rank also carries a feminine title (Dame, Baroness, Countess, Duchess, Queen, Empress) that
+  a player can switch to in the Chancery or with <code>/nobility gender</code>.</p>
+
+  <h3>Seals and vassalage</h3>
+  <p>A <b>seal</b> is a pledge of fealty. A peer pledges voluntarily with <code>/nobility seal</code>
+  (revocable with <code>/nobility unseal</code>), or is forced to by a lost war. When a claimant with a
+  <code>SUPPORT</code> or <code>CROWN</code> requirement promotes, the peers who sealed them become their
+  <b>vassals</b>, bound for a sentence of real-world days (<code>vassal_sentence_days</code>, default 7)
+  so players cannot vassal-hop to swing different lords' promotions. A bound player may
+  <code>/renounce</code> only after the sentence is served.</p>
+
+  <h3>War 'n Taxes drives the seals</h3>
+  <p>When War 'n Taxes is installed, <code>WarTaxesBridge</code> polls its <code>VassalManager</code> and
+  mirrors each colony vassalization into a nobility bond, so <b>winning War 'n Taxes wars is how you
+  collect the same-rank seals that promote you</b>. A win does not immediately make the loser a vassal;
+  it creates a <i>provisional seal</i> that converts to a sworn vassal when the winner next ascends, and
+  the War 'n Taxes sentence timer carries over. A higher noble beating a lower one binds them
+  immediately; a lower noble cannot bind their better. <code>VassalsPageMixin</code> tags each
+  still-provisional colony <b>(Provisional)</b> in War 'n Taxes' own tax-book vassal page, drawn by
+  War 'n Taxes with no change to its code.</p>
+
+  <h3>Feudal war protection</h3>
+  <p>With <code>protect_higher_rank_from_war</code> on, <code>WarSystemMixin</code> cancels a War 'n
+  Taxes war declared on a colony whose owner outranks the declarer ("you may not make war upon your
+  betters"). The attacker is told why and the declaration is suppressed; equal or lower rank is
+  unaffected.</p>
+
+  <h3>Renouncing a liege</h3>
+  <p>A vassal past their sentence may <code>/renounce</code>. They keep their own title, but the break is
+  open defiance: <code>ColonyHostility</code> marks the rebel HOSTILE in every colony the ex-liege owns,
+  so MineColonies guards turn on them until the quarrel is settled.</p>
+
+  <h3>The Emperor throne</h3>
+  <p>Emperor is the <code>HIGHEST</code> seat. The first King to qualify is crowned automatically. After
+  that the throne changes only through a usurpation challenge, fed in by external war or siege outcomes
+  through <code>/nobility emperor ...</code>, so a challenger must actually take the sitting Emperor's
+  imperial duchies to seize the crown.</p>
+
+  <h3>Domains and the map</h3>
+  <p>A Count and up commands a named domain, a <b>county</b>, then a <b>duchy</b>, then a <b>realm</b>,
+  set with <code>/nobility domain</code>. When Antique Atlas 4 is installed, <code>DomainOverlay</code>
+  draws each domain's borders and name labels straight onto the atlas screen through NeoForge screen
+  events and reflection, with a plain-parchment fallback when the atlas is absent.</p>
+
+  <h3>The Chancery Table</h3>
+  <p>The Chancery Table is a noble's console. Right-click opens a rank-filtered panel where every action
+  a noble can take, advance, seal, declare, name a domain, is a button that runs the same server-side
+  logic as the matching command and then refreshes. Only the lines that matter at your rank are shown,
+  derived from the ladder and overridable per rank in config.</p>
+
+  <h3>The War Table</h3>
+  <p>Six War Frames craft at once. Mounted like item frames, nine like-facing frames form a 3x3 grid;
+  inserting an atlas activates it as a live, drawable briefing map with a shared view, a marker lock, and
+  a persistent plan. A completed grid resists mining and takes three hits to dismantle, so nobody wipes a
+  briefing mid-sentence. When Hundred Years War is present the board gains a Company-of-Heroes-style
+  command layer over HYW's army units and freecam commander mode; it stays dormant otherwise.</p>
+
+  <h2>Configuration</h2>
+  <p>File: <code>config/warnnobility-common.toml</code>.</p>
+
+  <h3>[ranks]</h3>
+  <table>
+    <thead><tr><th>Key</th><th>Default</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>ladder</td><td><span class="def">8-rank list</span></td><td>The nobility ladder, lowest first. Each line is <code>name;REQUIREMENT;param;entryScore;show;advanceText;femaleName</code>; only the first four are required. <code>entryScore</code> is the score set on entering a rank (negative leaves it alone); <code>show</code> chooses which Chancery lines appear; <code>advanceText</code> is custom questline text</td></tr>
+    </tbody>
+  </table>
+
+  <h3>[vassalage]</h3>
+  <table>
+    <thead><tr><th>Key</th><th>Default</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>vassal_sentence_days</td><td><span class="def">7</span></td><td>Real-world days a vassal stays bound before it may break free (0 to 3650). Conquered vassals serve the same term once the conqueror ascends</td></tr>
+    </tbody>
+  </table>
+
+  <h3>[economy]</h3>
+  <table>
+    <thead><tr><th>Key</th><th>Default</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>buyin_item</td><td><span class="def">minecraft:emerald</span></td><td>Item consumed for a <code>BUYIN</code> promotion. Unused by the default ladder</td></tr>
+    </tbody>
+  </table>
+
+  <h3>[integration]</h3>
+  <table>
+    <thead><tr><th>Key</th><th>Default</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>tribute_enabled</td><td><span class="def">true</span></td><td>Bridge War 'n Taxes vassalization wars into seals. Harmless to leave true when War 'n Taxes or MineColonies is absent</td></tr>
+      <tr><td>tribute_poll_seconds</td><td><span class="def">20</span></td><td>How often (seconds) to poll War 'n Taxes for new or ended vassalizations (1 to 600)</td></tr>
+      <tr><td>protect_higher_rank_from_war</td><td><span class="def">true</span></td><td>Forbid declaring a War 'n Taxes war on a colony whose owner outranks the declarer. False lets anyone declare on anyone</td></tr>
+      <tr><td>king_requires_faction</td><td><span class="def">true</span></td><td>King gate: the claimant must lead an Easy Factions faction. Skipped if Easy Factions is absent</td></tr>
+      <tr><td>king_faction_claim_threshold</td><td><span class="def">50</span></td><td>King gate: total claimed chunks the claimant's faction must hold (0 to 1,000,000)</td></tr>
+      <tr><td>king_consume_crown</td><td><span class="def">true</span></td><td>King gate: consume the Crown at coronation. False = the King only has to bear one</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Compatibility</h2>
+  <p>Integrations are reflection- or Mixin-based and fail-soft; the ladder runs standalone. Per
+  <code>neoforge.mods.toml</code> the mod declares:</p>
+  <ul>
+    <li><b>MineColonies</b> (required) — the colony system read for territory and the wars that drive seals.</li>
+    <li><b>War 'n Taxes</b> (required; its modid is <code>minecolonytax</code>, not <code>warntaxes</code>) — runs the vassalization wars whose outcomes become seals, and provides the tax book that gets the (Provisional) tag.</li>
+    <li><b>Antique Atlas 4</b> (optional, client) — the domain-border map overlay; falls back to plain parchment.</li>
+    <li><b>Easy Factions</b> (optional) — backs the King gate and the faction map overlay; the King gate stays dormant when it is absent.</li>
+    <li><b>Hundred Years War</b> (optional) — supplies the army units and freecam commander mode the War Table's command layer overlays.</li>
+  </ul>
+
+  <h2>Commands</h2>
+  <p>All <code>/nobility ...</code> subcommands require permission level 2 (ops, command blocks, quest
+  rewards). <code>/renounce</code> is player-facing.</p>
+  <ul>
+    <li><code>/nobility promote|demote &lt;player&gt;</code> — advance or drop a rank</li>
+    <li><code>/nobility setrank &lt;player&gt; &lt;rank&gt;</code> — jump a player to any rank, ignoring requirements</li>
+    <li><code>/nobility setscore &lt;player&gt; &lt;value&gt;</code> — set a player's score</li>
+    <li><code>/nobility seal &lt;supporter&gt; &lt;target&gt;</code> / <code>/nobility unseal &lt;supporter&gt;</code> — pledge or revoke a voluntary seal</li>
+    <li><code>/nobility subjugate &lt;aggressor&gt; &lt;defender&gt;</code> — force a seal, the outcome of a vassalization war</li>
+    <li><code>/nobility vassal release &lt;liege&gt; &lt;vassal&gt;</code> / <code>/nobility vassal leave &lt;vassal&gt;</code> — end a bond</li>
+    <li><code>/nobility emperor throne|war|usurp|status &lt;challenger&gt; [...]</code> — feed throne and usurpation outcomes</li>
+    <li><code>/nobility gender &lt;player&gt; male|female</code> — switch a player's title form</li>
+    <li><code>/nobility domain &lt;player&gt; &lt;name|clear&gt;</code> — name or clear a domain (Count and up)</li>
+    <li><code>/nobility directive &lt;rank&gt; &lt;text|clear&gt;</code> — set custom "how to advance" text for a rank</li>
+    <li><code>/nobility info [player]</code> — print a player's title, domain, liege, vassals, seals, and next step</li>
+    <li><code>/renounce</code> — break from your liege once your sentence is served (turns the ex-liege's colonies hostile)</li>
+  </ul>
+
+  <h2>Building</h2>
+  <p>Run <code>./gradlew build</code>. Requires a <b>JDK 21</b>. The proprietary dependency jars
+  (MineColonies, War 'n Taxes, Easy Factions and their libraries) are <b>not</b> committed to this repo;
+  they are <code>compileOnly</code>, so supply them yourself and point Gradle at the folder that holds
+  them via <code>deps_dir</code> (in <code>~/.gradle/gradle.properties</code> or
+  <code>-Pdeps_dir=...</code>). The jar lands in <code>build/libs/warnnobility-neoforge-1.0.6.jar</code>.</p>
+
+  <p class="footer">MineColonies: War 'n Nobility &bull; NeoForge 21.1.233 &middot; Minecraft 1.21.1 &bull; modid warnnobility &bull; v1.0.6</p>
+
+</body>
+</html>

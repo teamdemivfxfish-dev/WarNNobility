@@ -1,12 +1,21 @@
-War 'n Nobility
-Copyright (c) 2026 NewtL. All Rights Reserved.
+MIT License
 
-This source code is made available for collaboration and review. No permission is
-granted to copy, modify, redistribute, sublicense, or publish this code or the mod
-built from it, in whole or in part, except by the copyright holder or with their
-prior written consent. Access to this repository does not transfer any ownership or
-license beyond viewing and contributing back to this project.
+Copyright (c) 2026 Barunn and NewtL
 
-The mod integrates with third-party mods (MineColonies, War 'n Taxes, Easy Factions,
-Antique Atlas, Hundred Years War). Those remain the property of their respective
-authors and are not covered by this license.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

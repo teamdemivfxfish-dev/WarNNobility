@@ -1,36 +1,25 @@
-# Gradle
-.gradle/
+# Gradle / build
 build/
-
-# NeoForge / moddev dev-run working dir
+.gradle/
+out/
+bin/
+# Runtime
 run/
 runs/
-
-# Build/IDE logs
+logs/
 *.log
-
-# IntelliJ / Eclipse / VS Code
+# Local dependency jars (do NOT redistribute upstream mods)
+libs/
+deps/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+# IDE
 .idea/
 *.iml
-*.ipr
-*.iws
 .vscode/
 .settings/
 .classpath
 .project
-bin/
-eclipse/
-out/
-
-# OS cruft
+# OS
 .DS_Store
 Thumbs.db
-
-# Local, machine-specific overrides (JDK path, deps_dir, etc.) — keep these out of the shared repo
-gradle-local.properties
-
-# Proprietary dependency jars are never committed (see README -> Building)
-libs/
-*.jar
-# ...but the Gradle wrapper jar MUST be committed so the project builds out of the box
-!gradle/wrapper/gradle-wrapper.jar
