@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[4,)"
-license = "MIT"
+license = "GPL-3.0-only"
 
 # Client-only mixin: hides HYW's redundant freecam HUD text (action list + control legend) while our own
 # F4 command HUD is up, so ours replaces it cleanly. required:false in the json -> harmless if HYW is absent.

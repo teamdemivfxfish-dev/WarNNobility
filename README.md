@@ -249,4 +249,4 @@ The jar lands in `build/libs/warnnobility-neoforge-1.0.6.jar`.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+**GPL-3.0** (GNU General Public License v3.0), see [LICENSE](LICENSE). War 'n Nobility is a MineColonies add-on and integrates MineColonies, which is licensed under GPLv3, so it is distributed under GPLv3.
