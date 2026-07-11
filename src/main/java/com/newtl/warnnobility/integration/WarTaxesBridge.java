@@ -12,6 +12,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.ModList;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -48,6 +49,27 @@ public final class WarTaxesBridge {
     private static int tickCounter = 0;
 
     private WarTaxesBridge() {}
+
+    /**
+     * The War 'n Taxes overlord (player UUID) of a colony, or {@code null} when the colony is not a
+     * vassal there (or War 'n Taxes is absent / has errored this session). Isolated exactly like
+     * {@link #poll}: the {@code VassalManager} reference is only reached after the mod-loaded guard, so
+     * this class still links when War 'n Taxes is missing. Used by the domain map ({@code DomainEngine})
+     * to fold a lord's colonies and all his vassal colonies into one combined territory outline.
+     *
+     * <p>Note this is independent of {@link #active()} / {@code TRIBUTE_ENABLED}: the map should reflect
+     * the actual vassal ties even when the noble-ladder tribute mirror is turned off.
+     */
+    @Nullable
+    public static UUID overlordOf(int colonyId) {
+        if (broken || !ModList.get().isLoaded(MODID)) return null;
+        try {
+            if (!VassalManager.isColonyVassal(colonyId)) return null;
+            return VassalManager.getVassalOverlordUUID(colonyId);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
 
     /** True only when enabled in config AND both War 'n Taxes and MineColonies are installed. */
     public static boolean active() {

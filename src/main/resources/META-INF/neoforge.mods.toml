@@ -9,7 +9,7 @@ config = "warnnobility.mixins.json"
 
 [[mods]]
 modId = "warnnobility"
-version = "1.0.6"
+version = "1.0.7"
 displayName = "War 'n Nobility"
 authors = "NewtL"
 description = '''

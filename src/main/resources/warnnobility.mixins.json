@@ -4,7 +4,8 @@
   "package": "com.newtl.warnnobility.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "WarSystemMixin"
+    "WarSystemMixin",
+    "BesiegeSystemMixin"
   ],
   "client": [
     "HywActionListMixin",

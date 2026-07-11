@@ -87,6 +87,22 @@ public final class DomainEngine {
                 }
             }
 
+            // --- War 'n Taxes vassalage grouping --------------------------------------------------
+            // A colony that is a War 'n Taxes vassal, together with EVERY colony of its overlord, folds
+            // into ONE territory outline on the Colonies layer: the whole domain shares the top lord's
+            // region + colour, so a lord and his vassals meld into a single border wherever their claims
+            // touch (and read as one domain everywhere else). Colonies with no vassalage keep their own
+            // colony-id region and still draw individually. When War 'n Taxes is absent, walkTopOverlord
+            // returns each colony's own owner, so this is a no-op and every colony stands alone as before.
+            Map<Integer, UUID> domainOwner = new HashMap<>();   // colony id -> its top overlord (domain) owner
+            Set<UUID> lordsWithVassals = new HashSet<>();       // owners that hold at least one vassal colony
+            for (IColony c : colonies) {
+                UUID top = walkTopOverlord(c.getID(), colonyOwner, ownerColony);
+                domainOwner.put(c.getID(), top);
+                UUID own = colonyOwner.get(c.getID());
+                if (top != null && own != null && !top.equals(own)) lordsWithVassals.add(top);
+            }
+
             // colony id -> claimed chunks
             Map<Integer, Set<ChunkPos>> colonyChunks = new HashMap<>();
             Map<ChunkPos, IChunkClaimData> claims = cm.getClaimData(dimKey);
@@ -107,8 +123,17 @@ public final class DomainEngine {
                 NobleData ud = owner != null ? nm.peek(owner) : null;
                 int colonyRgb = owner != null ? ownerRgb.getOrDefault(owner, 0xFFFFFF) : 0xFFFFFF;
                 int[] t = (ud != null) ? tiers(ud, nm, ownerRgb) : new int[]{0, -1, 0, -1, 0, -1};
+
+                // Colonies-tier region + colour: the shared vassalage DOMAIN when this colony is part of
+                // one (a vassal, or a lord that holds vassals), otherwise the colony stands on its own.
+                UUID dom = domainOwner.get(colonyId);
+                boolean inDomain = dom != null && owner != null
+                        && (!dom.equals(owner) || lordsWithVassals.contains(owner));
+                int region0 = inDomain ? domainRegion(dom) : colonyId;
+                int rgb0 = inDomain ? ownerRgb.getOrDefault(dom, 0xFFFFFF) : colonyRgb;
+
                 for (ChunkPos cp : ce.getValue()) {
-                    entries.add(new int[]{cp.x, cp.z, colonyId, colonyRgb, t[0], t[1], t[2], t[3], t[4], t[5]});
+                    entries.add(new int[]{cp.x, cp.z, region0, rgb0, t[0], t[1], t[2], t[3], t[4], t[5]});
                 }
             }
 
@@ -170,6 +195,33 @@ public final class DomainEngine {
             n = (n.liege != null) ? nm.peek(n.liege) : null;
         }
         return new int[]{countyR, countyRgb, dukeR, dukeRgb, kingR, kingRgb};
+    }
+
+    /** Walk the War 'n Taxes overlord chain up from {@code colonyId} to the top lord's owner UUID, so a
+     *  lord and every colony beneath him share one domain. Returns the colony's OWN owner when it is not
+     *  a War 'n Taxes vassal (or War 'n Taxes is absent). Cycle-safe, and it stops climbing once the
+     *  overlord holds no colony in this dimension. */
+    private static UUID walkTopOverlord(int colonyId, Map<Integer, UUID> colonyOwner, Map<UUID, Integer> ownerColony) {
+        Set<Integer> seen = new HashSet<>();
+        int cur = colonyId;
+        UUID owner = colonyOwner.get(cur);
+        while (seen.add(cur)) {
+            UUID ov = com.newtl.warnnobility.integration.WarTaxesBridge.overlordOf(cur);
+            if (ov == null || ov.equals(owner)) break;   // not a vassal (or self-owned) -> owner is the top
+            owner = ov;
+            Integer ovCol = ownerColony.get(ov);
+            if (ovCol == null) break;                     // the overlord holds no colony here; owner is the top
+            cur = ovCol;
+        }
+        return owner;
+    }
+
+    /** A stable, nonzero Colonies-tier region id for a vassalage domain, keyed by its lord's UUID. Forced
+     *  into the negative range (top bit set) so it can never collide with a positive MineColonies colony
+     *  id sharing that same field, which would otherwise meld two unrelated colonies. */
+    private static int domainRegion(UUID lord) {
+        int h = lord.hashCode();
+        return h == 0 ? Integer.MIN_VALUE : (h | 0x80000000);
     }
 
     /** MineColonies colony colour (a ChatFormatting) -> packed 0xRRGGBB (white if it has no colour). */

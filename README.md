@@ -1,6 +1,6 @@
 # MineColonies: War 'n Nobility
 
-> A configurable noble-rank and vassalage progression layer for MineColonies. Minecraft 1.21.1 · NeoForge (Forge variant available) · modid `warnnobility` · v1.0.6 · by Barunn (NewtL)
+> A configurable noble-rank and vassalage progression layer for MineColonies. Minecraft 1.21.1 · NeoForge (Forge variant available) · modid `warnnobility` · v1.0.7 · by Barunn (NewtL)
 
 **[Download on CurseForge](https://www.curseforge.com/minecraft/mc-mods/war-n-nobility)**
 
@@ -23,7 +23,7 @@ entirely in this jar, so the nobility ladder still runs when the optional partne
 
 | Loader | Minecraft | Mod version | Folder |
 |---|---|---|---|
-| NeoForge | 1.21.1 | 1.0.6 | `/` (primary) |
+| NeoForge | 1.21.1 | 1.0.7 | `/` (primary) |
 | Forge | 1.21.1 | 1.0.0 | Forge variant (`WarNNobility`) |
 
 ## Crafting & Items
@@ -245,7 +245,7 @@ point Gradle at the folder that holds them.
 3. Point Gradle at a Java 21 JDK: `org.gradle.java.home=...` in `~/.gradle/gradle.properties`, or set
    `JAVA_HOME`, or let the toolchain resolve one.
 
-The jar lands in `build/libs/warnnobility-neoforge-1.0.6.jar`.
+The jar lands in `build/libs/warnnobility-neoforge-1.0.7.jar`.
 
 ## License
 

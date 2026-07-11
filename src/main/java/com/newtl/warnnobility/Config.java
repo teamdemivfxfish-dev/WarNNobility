@@ -35,6 +35,9 @@ public final class Config {
     /** Block declaring a War 'n Taxes war on a colony whose owner outranks the declarer ("no war on betters"). */
     public static final ModConfigSpec.BooleanValue PROTECT_HIGHER_RANK_FROM_WAR;
 
+    /** Block declaring a War 'n Taxes BESIEGE on a colony whose owner outranks the declarer (no seal is gained by it). */
+    public static final ModConfigSpec.BooleanValue PROTECT_HIGHER_RANK_FROM_BESIEGE;
+
     /** King (CROWN) gate: require leading an Easy Factions faction. Ignored if Easy Factions is absent. */
     public static final ModConfigSpec.BooleanValue KING_REQUIRES_FACTION;
 
@@ -104,11 +107,12 @@ public final class Config {
 
         b.push("integration");
         TRIBUTE_ENABLED = b.comment(
-                        "Bridge War 'n Taxes (modid 'minecolonytax') vassalization WARS into this mod: when a",
-                        "colony is vassalized there, its owner is force-sealed to the victor here, so winning",
-                        "wars is how you collect the same-rank seals that promote you (Count/Duke/King). The",
-                        "seal lasts as long as the War 'n Taxes vassalization and releases when it ends. Needs",
-                        "War 'n Taxes + MineColonies installed; harmless to leave true when they are absent.")
+                        "Bridge War 'n Taxes (modid 'minecolonytax') vassalizations into this mod: whenever a",
+                        "colony becomes a vassal there — by winning a vassalization WAR or a BESIEGE — its owner",
+                        "is force-sealed to the victor here, so vassalizing is how you collect the same-rank seals",
+                        "that promote you (e.g. vassalize 2 fellow Counts to rank up to Duke). The seal lasts as",
+                        "long as the War 'n Taxes vassalization and releases when it ends. Needs War 'n Taxes +",
+                        "MineColonies installed; harmless to leave true when they are absent.")
                 .define("tribute_enabled", true);
         TRIBUTE_POLL_SECONDS = b.comment(
                         "How often (seconds) to poll War 'n Taxes for new or ended vassalizations.")
@@ -120,6 +124,15 @@ public final class Config {
                         "unaffected. Needs War 'n Taxes installed (a client mixin on its war-declaration path);",
                         "harmless when it is absent. Set false to let anyone declare on anyone.")
                 .define("protect_higher_rank_from_war", true);
+        PROTECT_HIGHER_RANK_FROM_BESIEGE = b.comment(
+                        "Feudal protection for BESIEGEMENTS: forbid declaring a War 'n Taxes besiege on a colony",
+                        "whose owner holds a HIGHER nobility rank than the declarer. War 'n Taxes itself treats a",
+                        "besiege as the way to 'punch up' at a stronger power, but under the noble ladder besieging",
+                        "your better wins you no seal, so with War 'n Nobility installed it is forbidden at the",
+                        "source (the would-be attacker is told why and the declaration is suppressed). Equal or",
+                        "lower rank is unaffected. Needs War 'n Taxes installed (a server mixin on its",
+                        "besiege-declaration path); harmless when it is absent. Set false to allow besieging upward.")
+                .define("protect_higher_rank_from_besiege", true);
 
         KING_REQUIRES_FACTION = b.comment(
                         "King (CROWN) gate: the claimant must LEAD (own) an Easy Factions faction. If Easy",

@@ -10,6 +10,12 @@ base {
     archivesName = "${mod_id}-neoforge"
 }
 
+// Emit the CurseForge deliverable name directly: warnnobility-neoforge-<ver>-1.21.1-java21.jar
+// (mcversion + java target), so the staged jar never has to be hand-renamed.
+tasks.named('jar', Jar).configure {
+    archiveClassifier = '1.21.1-java21'
+}
+
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
@@ -47,7 +53,7 @@ dependencies {
             "${instMods}/structurize-1.0.830-1.21.1.jar",
             "${instMods}/blockui-1.0.211-1.21.1-snapshot.jar",
             "${instMods}/domum-ornamentum-1.0.234-snapshot-main.jar",
-            "${instMods}/WarNTaxes-1.21.1-NeoForge-5.0.jar",
+            "${instMods}/WarNTaxes-NeoForge-5.0.2.jar",
             "${instMods}/easy_factions-NeoForge-1.0.3.jar"
     )
 }
