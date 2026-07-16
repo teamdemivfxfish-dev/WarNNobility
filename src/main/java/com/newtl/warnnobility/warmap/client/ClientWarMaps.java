@@ -32,10 +32,24 @@ public final class ClientWarMaps {
 
     /** Anchors of active boards the renderer has seen, so the texture baker knows what to bake. */
     private static final java.util.Set<BlockPos> ACTIVE = new java.util.HashSet<>();
+    /** When each board was last actually drawn (block-entity render), so the baker can skip boards the
+     *  player has turned away from / walked past. The BER only runs for on-screen, in-range sections, so a
+     *  fresh timestamp here == "on screen this frame"; a stale one == cull it and stop baking. */
+    private static final java.util.Map<BlockPos, Long> LAST_SEEN = new java.util.HashMap<>();
 
-    public static void markActive(BlockPos pos) { ACTIVE.add(pos.immutable()); }
+    public static void markActive(BlockPos pos) {
+        BlockPos k = pos.immutable();
+        ACTIVE.add(k);
+        LAST_SEEN.put(k, now());
+    }
 
-    public static void forget(BlockPos pos) { ACTIVE.remove(pos); }
+    /** Millis since this board was last rendered (Long.MAX_VALUE if never), for the baker's visibility cull. */
+    public static long sinceSeen(BlockPos pos) {
+        Long t = LAST_SEEN.get(pos);
+        return t == null ? Long.MAX_VALUE : now() - t;
+    }
+
+    public static void forget(BlockPos pos) { ACTIVE.remove(pos); LAST_SEEN.remove(pos); }
 
     /** A board lost its atlas: forget it, drop its baked texture, and clear the block entity's state so the
      *  in-world renderer stops drawing the stale map this very frame. */

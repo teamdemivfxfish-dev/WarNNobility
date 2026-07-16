@@ -22,6 +22,8 @@ public final class ClientDomains {
     public static final int L_DUCHIES = 2;
     public static final int L_KINGDOMS = 3;
     public static final int L_FACTIONS = 4;   // Easy Factions claims (separate layer)
+    public static final int L_TERRAIN = 5;    // the real per-block terrain picture
+    public static final int L_STRUCTURES = 6; // inked footprints / markers for discovered builds
 
     private static ResourceLocation dimension;
     private static Map<Long, int[]> data = new HashMap<>();
@@ -29,7 +31,7 @@ public final class ClientDomains {
     private static Map<Long, int[]> factionData = new HashMap<>();   // [x,z,regionId,rgb]
     private static List<DomainEngine.Label> factionLabels = new ArrayList<>();
     private static List<DomainEngine.Label> colonyMarkers = new ArrayList<>();   // a town marker per colony
-    private static final Set<Integer> enabled = new HashSet<>(Set.of(L_COUNTIES));
+    private static final Set<Integer> enabled = new HashSet<>(Set.of(L_COUNTIES, L_TERRAIN, L_STRUCTURES));
     private static int version = 0;   // bumped on any data or toggle change, so the overlay rebuilds
 
     public static void accept(DomainMapPayload msg) {
@@ -65,14 +67,26 @@ public final class ClientDomains {
 
     public static boolean isEnabled(int level) { return enabled.contains(level); }
 
+    /** Map-detail layers (terrain, structures) are about what the PAGE shows, not who owns what, so they sit
+     *  outside the border layers' mutual exclusion and are never cleared by it. */
+    private static boolean isMapDetail(int level) { return level == L_TERRAIN || level == L_STRUCTURES; }
+
     /**
      * Toggle a layer. The four nobility tiers (Colonies/Counties/Duchies/Kingdoms) can be on together --
      * the overlay renders them by hierarchy (highest tier wins per chunk). The Factions layer is a SEPARATE
      * claim system and is mutually exclusive with all four: turning Factions on clears the nobility tiers,
-     * and turning any nobility tier on clears Factions.
+     * and turning any nobility tier on clears Factions. Map-detail layers are independent of all of that.
      */
     public static void toggle(int level) {
         boolean turningOn = !enabled.contains(level);
+        if (isMapDetail(level)) {
+            if (turningOn) enabled.add(level); else enabled.remove(level);
+            version++;
+            return;
+        }
+        // Border layers below. Remember the map-detail layers across the Factions clear, so switching to
+        // faction borders never silently blanks the terrain out from under them.
+        boolean terrain = enabled.contains(L_TERRAIN), structures = enabled.contains(L_STRUCTURES);
         if (level == L_FACTIONS) {
             enabled.clear();
             if (turningOn) enabled.add(L_FACTIONS);
@@ -80,6 +94,8 @@ public final class ClientDomains {
             enabled.remove(L_FACTIONS);
             if (turningOn) enabled.add(level); else enabled.remove(level);
         }
+        if (terrain) enabled.add(L_TERRAIN);
+        if (structures) enabled.add(L_STRUCTURES);
         version++;
     }
 

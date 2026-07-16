@@ -26,8 +26,24 @@ public final class WarMapDraw {
      *  symbols ON this parchment; without it the tiles read as faint scribbles on dark slate. */
     private static final int PARCHMENT = 0xFFE6D3A6;
 
+    /**
+     * The whole board in one pass (base + overlay). Kept for the planner's pre-first-bake fallback and any
+     * caller that wants a single self-contained image. Live rendering splits these into two cached layers
+     * ({@link #renderBase} rarely, {@link #renderOverlay} often) so a busy briefing never re-bakes the
+     * expensive atlas — see {@link WarBoardTextures}.
+     */
     public static void renderContent(GuiGraphics g, int ox, int oy, int size,
                                      AtlasBoard ab, WarMapData data, BlockPos board) {
+        renderBase(g, ox, oy, size, ab);
+        renderOverlay(g, ox, oy, size, ab, data, board);
+    }
+
+    /**
+     * The STATIC layer: parchment, atlas tiles, domain/faction borders, colony + territory name labels,
+     * and the wood frame. Everything here changes only when the view pans/zooms or the world map itself
+     * changes, so {@link WarBoardTextures} bakes it into a cached texture and reuses it across frames.
+     */
+    public static void renderBase(GuiGraphics g, int ox, int oy, int size, AtlasBoard ab) {
         // 0) the parchment page behind everything (flush so it draws BEHIND the tiles, not over them)
         com.mojang.blaze3d.systems.RenderSystem.setShaderColor(1f, 1f, 1f, 1f);   // clear any leftover tint
         g.fill(ox, oy, ox + size, oy + size, PARCHMENT);
@@ -48,11 +64,53 @@ public final class WarMapDraw {
             com.mojang.blaze3d.systems.RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             g.pose().popPose();
         }
-        if (ab == null) return;
+        if (ab != null) {
+            final int fox = ox, foy = oy;
+            final AtlasBoard fab = ab;
+            com.newtl.warnnobility.atlas.client.MapProjector proj =
+                    (wx, wz) -> new double[]{fox + fab.sx(wx), foy + fab.sy(wz)};
+            int cx0 = ox + 12, cy0 = oy + 12, cx1 = ox + size - 12, cy1 = oy + size - 12;
 
-        // 2) domain + faction borders (follow the legend toggles via DomainOverlay's edge lists)
-        for (int[] e : DomainOverlay.borderEdges()) edge(g, ab, ox, oy, e);
-        for (int[] e : DomainOverlay.factionBorderEdges()) edge(g, ab, ox, oy, e);
+            // 1b) the real terrain picture, straight over the atlas tiles and under everything else, so the
+            //     board shows the ground the way the handheld atlas does rather than a blank biome wash.
+            if (ClientDomains.isEnabled(ClientDomains.L_TERRAIN)) {
+                com.newtl.warnnobility.atlas.client.MapRaster.draw(
+                        g, Minecraft.getInstance().level, proj, cx0, cy0, cx1, cy1);
+            }
+            // 2) domain + faction borders (follow the legend toggles via DomainOverlay's edge lists)
+            for (int[] e : DomainOverlay.borderEdges()) edge(g, ab, ox, oy, e);
+            for (int[] e : DomainOverlay.factionBorderEdges()) edge(g, ab, ox, oy, e);
+            // 5) colony markers + domain / faction name labels (matching the atlas book)
+            drawMarkers(g, ab, ox, oy);
+            // 5b) discovered structures: inked footprints when the board is zoomed in far enough to read
+            //     them, clustered pins when it is not. Part of the base layer: it changes rarely, and its
+            //     version is folded into the bake key.
+            java.util.List<com.newtl.warnnobility.atlas.Discovery> discs =
+                    com.newtl.warnnobility.atlas.client.ClientDiscoveries.list();
+            if (!discs.isEmpty() && ClientDomains.isEnabled(ClientDomains.L_STRUCTURES)) {
+                boolean sketching = ab.ppb >= com.newtl.warnnobility.atlas.client.StructureSketch.MIN_PPB;
+                if (sketching) {
+                    com.newtl.warnnobility.atlas.client.StructureSketch.draw(
+                            g, discs, proj, cx0, cy0, cx1, cy1, ab.ppb);
+                }
+                com.newtl.warnnobility.atlas.client.DiscoveryMarkers.draw(
+                        g, Minecraft.getInstance().font, discs, proj,
+                        cx0, cy0, cx1, cy1, -1, -1, !sketching);
+            }
+        }
+        frame(g, ox, oy, size);
+    }
+
+    /**
+     * The LIVE layer: the drawn plan, pointer pulses, and field units/colonists. These change constantly
+     * during a briefing (someone drawing, armies marching, pings firing) but are cheap vector marks, so
+     * {@link WarBoardTextures} keeps them in a SEPARATE texture re-baked only when they actually change,
+     * composited over the cached base. The wood frame is redrawn last here too, so edge marks stay clipped
+     * exactly as they were when everything shared one texture.
+     */
+    public static void renderOverlay(GuiGraphics g, int ox, int oy, int size,
+                                     AtlasBoard ab, WarMapData data, BlockPos board) {
+        if (ab == null) return;
 
         // 3) the plan
         for (WarStroke s : data.strokes) stroke(g, ab, ox, oy, s.tool, s.color, s.label, s.pts, s.size);
@@ -64,16 +122,16 @@ public final class WarMapDraw {
             circle(g, ox + ab.sx(p.x), oy + ab.sy(p.z), 3 + (1 - Math.max(0f, a)) * 8, col);
         }
 
-        // 5) colony markers + domain / faction name labels (matching the atlas book)
-        drawMarkers(g, ab, ox, oy);
-
-        // 6) field units + colonists, baked onto the board so the PHYSICAL in-world board shows them too
-        //    (the GUI planner draws only selection highlights on top). Drawn before the frame so it clips
-        //    edge labels. Skipped when the board's "show units" toggle is off ("just a map" mode).
+        // 6) field units + colonists, so the PHYSICAL in-world board shows them too (the GUI planner draws
+        //    only selection highlights on top). Skipped when the board's "show units" toggle is off.
         if (data.showUnits) ClientUnits.renderAll(g, ab, ox, oy, Minecraft.getInstance().font, board);
 
-        // A wood frame around the board (the "Large War Frame" look), bevelled light top-left / dark
-        // bottom-right.
+        frame(g, ox, oy, size);
+    }
+
+    /** The bevelled wood "Large War Frame" border (light top-left / dark bottom-right), which also clips
+     *  any mark that reached the board edge. */
+    private static void frame(GuiGraphics g, int ox, int oy, int size) {
         int b = 12;
         int light = 0xFF4A3724, dark = 0xFF2A1E12;
         g.fill(ox, oy, ox + size, oy + b, light);                       // top

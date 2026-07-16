@@ -42,14 +42,19 @@ public class WarBoardRenderer implements BlockEntityRenderer<WarFrameBlockEntity
     public void render(WarFrameBlockEntity be, float partialTick, PoseStack pose,
                        MultiBufferSource buffers, int light, int overlay) {
         if (!be.isActive()) return;
-        ClientWarMaps.markActive(be.getBlockPos());           // tell the baker this board is live
-        int tex = WarBoardTextures.texture(be.getBlockPos());
-        if (tex < 0) return;                                  // not baked yet this session; slate shows
+        ClientWarMaps.markActive(be.getBlockPos());           // tell the baker this board is live + on-screen
+        int base = WarBoardTextures.baseTexture(be.getBlockPos());
+        if (base < 0) return;                                 // not baked yet this session; slate shows
+        int overTex = WarBoardTextures.overlayTexture(be.getBlockPos());
 
         pose.pushPose();
         try {
             faceTransform(pose, be.facing(), be.data().rotation);
-            blit(pose, tex, tint(be));
+            int tint = tint(be);
+            blit(pose, base, tint, 0f);                       // cached map (tiles/borders/labels)
+            // The live plan/units ride a hair toward the viewer so they always win the depth test over the
+            // base without z-fighting; only re-baked when they change, so this is free most frames.
+            if (overTex >= 0) blit(pose, overTex, tint, 0.5f);
         } catch (Throwable ignored) {
         } finally {
             pose.popPose();
@@ -75,8 +80,10 @@ public class WarBoardRenderer implements BlockEntityRenderer<WarFrameBlockEntity
         }
     }
 
-    /** Draw the baked texture as a double-sided quad over the board face (pixel space [0,BOARD_PX]). */
-    private static void blit(PoseStack pose, int textureId, int tint) {
+    /** Draw the baked texture as a double-sided quad over the board face (pixel space [0,BOARD_PX]).
+     *  {@code zBias} lifts the quad toward the viewer (in board pixels) so a layered overlay wins the depth
+     *  test over the base without z-fighting; local +z is the face normal (toward the viewer). */
+    private static void blit(PoseStack pose, int textureId, int tint, float zBias) {
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, textureId);
         WarBoardTextures.forceNearest(textureId);   // crisp pixels, not LINEAR blur
@@ -86,14 +93,14 @@ public class WarBoardRenderer implements BlockEntityRenderer<WarFrameBlockEntity
         RenderSystem.disableCull();   // double-sided: always faces the viewer
 
         Matrix4f m = pose.last().pose();
-        float s = BOARD_PX;
+        float s = BOARD_PX, z = zBias;
         Tesselator tess = Tesselator.getInstance();
         BufferBuilder bb = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         // v is flipped (framebuffer textures are bottom-up): board top -> v=1. Colour = world-light tint.
-        bb.addVertex(m, 0, 0, 0).setUv(0f, 1f).setColor(tint);
-        bb.addVertex(m, 0, s, 0).setUv(0f, 0f).setColor(tint);
-        bb.addVertex(m, s, s, 0).setUv(1f, 0f).setColor(tint);
-        bb.addVertex(m, s, 0, 0).setUv(1f, 1f).setColor(tint);
+        bb.addVertex(m, 0, 0, z).setUv(0f, 1f).setColor(tint);
+        bb.addVertex(m, 0, s, z).setUv(0f, 0f).setColor(tint);
+        bb.addVertex(m, s, s, z).setUv(1f, 0f).setColor(tint);
+        bb.addVertex(m, s, 0, z).setUv(1f, 1f).setColor(tint);
         com.mojang.blaze3d.vertex.MeshData mesh = bb.build();
         if (mesh != null) BufferUploader.drawWithShader(mesh);
 

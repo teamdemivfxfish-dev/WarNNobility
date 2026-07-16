@@ -94,6 +94,7 @@ public class WarNNobility {
         BLOCK_ENTITIES.register(modBus);
         modBus.addListener(Network::register);
         modBus.addListener(DomainNetwork::register);   // optional nobility-domain map (folded-in Domain Atlas)
+        modBus.addListener(com.newtl.warnnobility.atlas.net.AtlasNetwork::register);   // player-structure atlas markers
         modBus.addListener(com.newtl.warnnobility.warmap.net.WarMapNetwork::register);  // the War Table
         modBus.addListener(this::addToCreativeTab);
     }

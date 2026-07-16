@@ -214,13 +214,16 @@ public class WarMapScreen extends Screen {
         // map panel - same content renderer as the in-world board, so they always match
         g.fill(mapX - 1, mapY - 1, mapX + mapW + 1, mapY + mapH + 1, 0xFF2A2018);
         AtlasBoard ab = AtlasBoard.create(minecraft.player, minecraft.level.dimension(), mapW, mapH, centerX, centerZ, zoom);
-        int tex = WarBoardTextures.texture(pos);   // blit the world-baked board
+        int tex = WarBoardTextures.baseTexture(pos);   // blit the world-baked STATIC map (tiles/borders/labels)
         g.enableScissor(mapX, mapY, mapX + mapW, mapY + mapH);
         if (tex >= 0) {
-            WarBoardTextures.blitInto(g, tex, mapX, mapY, mapW, mapH);          // the crisp baked board
+            WarBoardTextures.blitInto(g, tex, mapX, mapY, mapW, mapH);          // the crisp baked base
         } else {
-            WarMapDraw.renderContent(g, mapX, mapY, mapW, ab, be.data(), pos);  // until the first bake
+            WarMapDraw.renderBase(g, mapX, mapY, mapW, ab);                     // until the first bake
         }
+        // The plan + pings + unit banners live in a SEPARATE cached overlay on the in-world board; in the
+        // planner we just draw them fresh each frame (no bake to wait on), so editing tracks the cursor 1:1.
+        WarMapDraw.renderOverlay(g, mapX, mapY, mapW, ab, be.data(), pos);
         // in MAP mode, show the stroke being drawn (the active drawing tracks the cursor 1:1 = live board)
         if (mode == Mode.MAP && draftPts != null && draftPts.size() >= 4 && ab != null) {
             double[] p = new double[draftPts.size()];

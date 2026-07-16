@@ -37,9 +37,11 @@ public final class DomainOverlay {
     private static final String ATLAS_SCREEN = "folk.sisby.antique_atlas.gui.AtlasScreen";
     private static final String ATLAS_RENDERER = "folk.sisby.antique_atlas.gui.AtlasRenderer";
 
-    private static final String[] NAMES = {"Colonies", "Counties", "Duchies", "Kingdoms", "Factions"};
+    private static final String[] NAMES =
+            {"Colonies", "Counties", "Duchies", "Kingdoms", "Factions", "Terrain", "Structures"};
     // A per-tier legend swatch colour (the map key); the real borders use each lord's own colony colour.
-    private static final int[] SWATCH = {0xFFE8DCC0, 0xFF80C880, 0xFF6FA8FF, 0xFFE6C24E, 0xFFE0705A};
+    private static final int[] SWATCH =
+            {0xFFE8DCC0, 0xFF80C880, 0xFF6FA8FF, 0xFFE6C24E, 0xFFE0705A, 0xFF8FA860, 0xFFB5824E};
     private static final int LEGEND_W = 98;   // legend card inner width
     private static final int ROW_H = 14;      // legend row height
     private static final int HEADER_H = 15;   // height reserved for the "Borders" title
@@ -128,6 +130,20 @@ public final class DomainOverlay {
         try {
             int bx = ri(M_BOOKX, atlas), by = ri(M_BOOKY, atlas);
             int mapW = ri(M_MAPW, atlas), mapH = ri(M_MAPH, atlas);
+            final Screen fa = atlas;
+            com.newtl.warnnobility.atlas.client.MapProjector proj =
+                    (wx, wz) -> new double[]{w2sx(fa, wx), w2sy(fa, wz)};
+            int mx0 = bx + mapBorderW, my0 = by + mapBorderH;
+
+            // The terrain picture goes down FIRST, under every border, label and marker: it is the page the
+            // rest is drawn on. Without it Antique Atlas shows one biome texture per tile and the map reads
+            // as an empty field no matter how much we draw on top.
+            if (ClientDomains.isEnabled(ClientDomains.L_TERRAIN)) {
+                g.enableScissor(mx0, my0, mx0 + mapW, my0 + mapH);
+                com.newtl.warnnobility.atlas.client.MapRaster.draw(
+                        g, Minecraft.getInstance().level, proj, mx0, my0, mx0 + mapW, my0 + mapH);
+                g.disableScissor();
+            }
 
             Map<Long, int[]> data = ClientDomains.data();
             Map<Long, int[]> fdata = ClientDomains.factionData();
@@ -160,6 +176,26 @@ public final class DomainOverlay {
                 if (ClientDomains.isEnabled(ClientDomains.L_FACTIONS)) {
                     for (DomainEngine.Label l : ClientDomains.factionLabels()) drawLabel(g, atlas, font, l, placed);
                 }
+                g.disableScissor();
+            }
+
+            // Discovered structures (independent of the domain toggles, so they show even on a bare map).
+            // Zoomed in far enough to read a footprint, we ink the real traced outline and drop the pins;
+            // zoomed out, the pins cluster. Own scissor so they clip to the map box like everything else.
+            java.util.List<com.newtl.warnnobility.atlas.Discovery> discs =
+                    com.newtl.warnnobility.atlas.client.ClientDiscoveries.list();
+            if (!discs.isEmpty() && ClientDomains.isEnabled(ClientDomains.L_STRUCTURES)) {
+                g.enableScissor(mx0, my0, mx0 + mapW, my0 + mapH);
+                double ppb = w2sx(fa, 1) - w2sx(fa, 0);   // screen pixels per world block, live from the atlas
+                boolean sketching = ppb >= com.newtl.warnnobility.atlas.client.StructureSketch.MIN_PPB;
+                if (sketching) {
+                    com.newtl.warnnobility.atlas.client.StructureSketch.draw(
+                            g, discs, proj, mx0, my0, mx0 + mapW, my0 + mapH, ppb);
+                }
+                com.newtl.warnnobility.atlas.client.DiscoveryMarkers.draw(
+                        g, Minecraft.getInstance().font, discs, proj,
+                        mx0, my0, mx0 + mapW, my0 + mapH,
+                        (int) event.getMouseX(), (int) event.getMouseY(), !sketching);
                 g.disableScissor();
             }
 
@@ -302,14 +338,17 @@ public final class DomainOverlay {
         return e == null ? 0 : e[2];
     }
 
-    /** The top-Y of each legend row (indices 0..3 = the four domain tiers, 4 = Factions), accounting for
-     *  the two section headers ("Domain Types" then "Faction Claims"). Shared by draw + hit-test. */
+    /** The top-Y of each legend row (0..3 = the four domain tiers, 4 = Factions, 5/6 = the map-detail
+     *  layers), accounting for the three section headers. Shared by draw + hit-test. */
     private static int[] rowYs(int ly) {
         int[] r = new int[NAMES.length];
-        int y = ly + HEADER_H + SECTION_H;            // past the "Borders" title + "Domain Types" header
+        int y = ly + HEADER_H + SECTION_H;            // past the "Map" title + "Domain Types" header
         for (int i = 0; i < 4; i++) { r[i] = y; y += ROW_H; }
         y += SECTION_H;                               // the "Faction Claims" header
-        r[4] = y;
+        r[ClientDomains.L_FACTIONS] = y; y += ROW_H;
+        y += SECTION_H;                               // the "Map Detail" header
+        r[ClientDomains.L_TERRAIN] = y; y += ROW_H;
+        r[ClientDomains.L_STRUCTURES] = y;
         return r;
     }
 
@@ -320,18 +359,19 @@ public final class DomainOverlay {
         int[] pos = legendPos(atlas);
         int lx = pos[0], ly = pos[1];
         int[] rowY = rowYs(ly);
-        int cardH = rowY[4] + ROW_H + 4 - ly;
+        int cardH = rowY[ClientDomains.L_STRUCTURES] + ROW_H + 4 - ly;
         var font = Minecraft.getInstance().font;
 
         // card: translucent dark parchment with the house double outline
         g.fill(lx - 5, ly - 4, lx + LEGEND_W + 5, ly + cardH, 0xE0140F0A);
         g.renderOutline(lx - 5, ly - 4, LEGEND_W + 10, cardH + 4, 0xFF120D08);
         g.renderOutline(lx - 4, ly - 3, LEGEND_W + 8, cardH + 2, 0xFF8A6A3C);
-        g.drawString(font, "Borders", lx, ly, 0xFFE6C87A, false);
+        g.drawString(font, "Map", lx, ly, 0xFFE6C87A, false);
 
         // group headings
         drawSection(g, font, "Domain Types", lx, ly + HEADER_H);
         drawSection(g, font, "Faction Claims", lx, rowY[3] + ROW_H);
+        drawSection(g, font, "Map Detail", lx, rowY[ClientDomains.L_FACTIONS] + ROW_H);
 
         for (int i = 0; i < NAMES.length; i++) {
             int ry = rowY[i];
@@ -359,16 +399,23 @@ public final class DomainOverlay {
         int sx = lx, sy = ry + 1;
         int fill = on ? SWATCH[i] : 0xFF564E42;
         g.fill(sx, sy, sx + 13, sy + 12, 0xFF000000);          // dark icon tile
-        if (i == ClientDomains.L_FACTIONS) {
-            g.fill(sx + 2, sy + 2, sx + 11, sy + 10, fill);    // a plain claim square (separate system)
-            return;
-        }
         switch (i) {
             case 0 -> colonyGlyph(g, sx, sy, fill);            // a homestead
             case 1 -> countyGlyph(g, sx, sy, fill);            // a battlemented keep
             case 2 -> duchyGlyph(g, sx, sy, fill);             // a shield
-            default -> kingdomGlyph(g, sx, sy, fill);          // a crown
+            case 3 -> kingdomGlyph(g, sx, sy, fill);           // a crown
+            case ClientDomains.L_FACTIONS ->
+                    g.fill(sx + 2, sy + 2, sx + 11, sy + 10, fill);   // a plain claim square
+            case ClientDomains.L_TERRAIN -> terrainGlyph(g, sx, sy, fill);   // a hill
+            default -> colonyGlyph(g, sx, sy, fill);           // structures = a building
         }
+    }
+
+    /** The Terrain key: a little hill over ground, for the layer that paints the land itself. */
+    private static void terrainGlyph(GuiGraphics g, int sx, int sy, int c) {
+        g.fill(sx + 2, sy + 8, sx + 11, sy + 10, c);           // ground line
+        g.fill(sx + 4, sy + 5, sx + 9, sy + 8, c);             // slope
+        g.fill(sx + 6, sy + 3, sx + 8, sy + 5, c);             // peak
     }
 
     private static void colonyGlyph(GuiGraphics g, int sx, int sy, int c) {

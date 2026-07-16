@@ -51,15 +51,23 @@ public final class ClientUnits {
 
     private static final Map<BlockPos, List<FieldUnit>> UNITS = new HashMap<>();
     private static final Map<BlockPos, List<MapDot>> DOTS = new HashMap<>();
+    /** Bumped whenever a board's roster changes, so the board's overlay texture re-bakes only when units
+     *  actually move/appear (not every frame). Read by {@link WarBoardTextures}'s overlay cache key. */
+    private static final Map<BlockPos, Integer> REV = new HashMap<>();
     private static UUID selected;   // GUI-only selection (one planner open at a time)
 
     /** Replace a board's roster from a freshly-scanned server payload. */
     public static void set(BlockPos board, List<FieldUnit> units, List<MapDot> dots) {
-        UNITS.put(board.immutable(), units != null ? units : List.of());
-        DOTS.put(board.immutable(), dots != null ? dots : List.of());
+        BlockPos k = board.immutable();
+        UNITS.put(k, units != null ? units : List.of());
+        DOTS.put(k, dots != null ? dots : List.of());
+        REV.merge(k, 1, Integer::sum);
     }
 
-    public static void forget(BlockPos board) { UNITS.remove(board); DOTS.remove(board); }
+    /** A monotonically increasing revision for {@code board}'s unit roster (0 if never set). */
+    public static int rev(BlockPos board) { return REV.getOrDefault(board, 0); }
+
+    public static void forget(BlockPos board) { UNITS.remove(board); DOTS.remove(board); REV.merge(board, 1, Integer::sum); }
 
     public static List<FieldUnit> all(BlockPos board) { return UNITS.getOrDefault(board, List.of()); }
 
