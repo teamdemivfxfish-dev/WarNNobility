@@ -92,6 +92,9 @@ public class WarNNobility {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
+        // Before any world loads: tell Surveyor to gather terrain. It collects nothing unless a consumer asks,
+        // Antique Atlas 4 used to be that consumer, and Antique Atlas 8 does not use Surveyor at all.
+        com.newtl.warnnobility.atlas.surveyor.SurveyorTerrain.enableCollection();
         modBus.addListener(Network::register);
         modBus.addListener(DomainNetwork::register);   // optional nobility-domain map (folded-in Domain Atlas)
         modBus.addListener(com.newtl.warnnobility.atlas.net.AtlasNetwork::register);   // player-structure atlas markers

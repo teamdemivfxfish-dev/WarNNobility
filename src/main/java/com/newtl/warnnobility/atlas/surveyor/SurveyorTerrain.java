@@ -47,7 +47,7 @@ public final class SurveyorTerrain {
     /** Consecutive failed calls before we stop asking; a transient miss should not kill the layer forever. */
     private static final int FAIL_LIMIT = 20;
 
-    private static boolean tried, broken;
+    private static boolean tried, broken, loggedFailure;
     private static int fails;
     private static Method M_OF, M_GET, M_PALETTE, M_SINGLE_LAYER, M_EXISTS, M_BLOCKS, M_DEPTHS, M_WATER;
 
@@ -85,13 +85,41 @@ public final class SurveyorTerrain {
             M_BLOCKS = raw.getMethod("blocks");
             M_DEPTHS = raw.getMethod("depths");
             M_WATER = raw.getMethod("waterDepths");
+            com.newtl.warnnobility.WarNNobility.LOGGER.info(
+                    "[WnN] Surveyor terrain bridge resolved; the map's terrain layer is available.");
         } catch (Throwable t) {
             broken = true;   // Surveyor absent or reshaped: the raster layer just never draws
+            com.newtl.warnnobility.WarNNobility.LOGGER.warn(
+                    "[WnN] Surveyor terrain bridge unavailable ({}: {}); the map will show no terrain.",
+                    t.getClass().getSimpleName(), t.getMessage());
         }
     }
 
     /** Whether the terrain layer can run at all (Surveyor present and shaped as expected). */
     public static boolean available() { init(); return !broken; }
+
+    /**
+     * Ask Surveyor to actually collect terrain. <b>Call this at mod init, before any world loads.</b>
+     *
+     * <p>Surveyor gathers NOTHING by itself. {@code WorldSummary.enableTerrain()} flips a static
+     * {@code ENABLE_TERRAIN} flag, and without it {@code WorldSummary.terrain()} is null, so
+     * {@code WorldTerrain.of(level)} returns null and every read here comes back empty <i>without throwing</i>
+     * -- indistinguishable from unexplored ground. That is what its startup line "[Surveyor] is not a map
+     * mod" is really saying: it is a framework, and the map mod is supposed to switch this on.
+     *
+     * <p>Antique Atlas 4 called this from its own initialiser, which is why the terrain layer worked until
+     * the pack swapped to Antique Atlas 8. AA8 does not use Surveyor at all, so if we want the data, we are
+     * now the map mod and it is our job to ask for it.
+     */
+    public static void enableCollection() {
+        try {
+            Class.forName("folk.sisby.surveyor.WorldSummary").getMethod("enableTerrain").invoke(null);
+            com.newtl.warnnobility.WarNNobility.LOGGER.info(
+                    "[WnN] asked Surveyor to collect terrain (nothing else does now that Antique Atlas 4 is gone).");
+        } catch (Throwable t) {
+            // Surveyor absent: the terrain layer stays off, everything else on the map is unaffected.
+        }
+    }
 
     /**
      * The surveyed surface of one chunk, or null if Surveyor has nothing for it (never explored, outside the
@@ -126,6 +154,14 @@ public final class SurveyorTerrain {
             fails = 0;
             return new Surface(known, block, depth, water);
         } catch (Throwable t) {
+            // Every call here is caught, so a reshaped Surveyor would otherwise fail completely silently and
+            // look identical to "nothing surveyed yet". Say it once.
+            if (!loggedFailure) {
+                loggedFailure = true;
+                com.newtl.warnnobility.WarNNobility.LOGGER.warn(
+                        "[WnN] Surveyor terrain read failed ({}: {}); the map will show no terrain.",
+                        t.getClass().getSimpleName(), t.getMessage(), t);
+            }
             if (++fails >= FAIL_LIMIT) broken = true;
             return null;
         }

@@ -1,6 +1,9 @@
 package com.newtl.warnnobility.domain.client;
 
 import com.newtl.warnnobility.WarNNobility;
+import com.newtl.warnnobility.atlas.client.AtlasScreenBridge;
+import com.newtl.warnnobility.atlas.client.AtlasSize;
+import com.newtl.warnnobility.atlas.client.MapProjector;
 import com.newtl.warnnobility.domain.DomainEngine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -11,31 +14,27 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Draws the domain borders, the name labels, and the View toggles ON the Antique Atlas 4 screen, via
- * NeoForge screen events (no mixin).
+ * Draws the terrain, the domain borders, the name labels, and the View toggles ON the Antique Atlas screen,
+ * via NeoForge screen events (no mixin).
  *
- * Antique Atlas 4 (folk.sisby.antique_atlas) is an architectury jar with intermediary mappings, so we
- * never reference its types at compile time: we recognise its screen by class name and call its
- * <b>public</b> coordinate helpers ({@code worldXToScreenX/worldZToScreenY}, {@code bookX/bookY},
- * {@code mapWidth/mapHeight}) reflectively. At runtime those return ordinary numbers and the
- * GuiGraphics is the real (Mojang-mapped) one, so all drawing stays normal.
+ * <p>Nothing here knows which atlas is installed: the screen is recognised and its projection read through
+ * {@link AtlasScreenBridge}, and every layer is fed a {@link MapProjector}. That is deliberate. This overlay
+ * was originally written against Antique Atlas 4 with its reflection inlined, and when the pack swapped to
+ * Antique Atlas 8 (a different mod id, different package, private int-based coordinate methods) that
+ * inlining is exactly what made the swap expensive. The atlas is now one file away.
  *
- * Border edges are precomputed and rebuilt only when the data or toggles change, so the screen does
+ * <p>Border edges are precomputed and rebuilt only when the data or toggles change, so the screen does
  * not lag. Toggle clicks are consumed so the atlas's own input never fights them.
  */
 @EventBusSubscriber(modid = WarNNobility.MODID, value = Dist.CLIENT)
 public final class DomainOverlay {
 
     private DomainOverlay() {}
-
-    private static final String ATLAS_SCREEN = "folk.sisby.antique_atlas.gui.AtlasScreen";
-    private static final String ATLAS_RENDERER = "folk.sisby.antique_atlas.gui.AtlasRenderer";
 
     private static final String[] NAMES =
             {"Colonies", "Counties", "Duchies", "Kingdoms", "Factions", "Terrain", "Structures"};
@@ -47,10 +46,8 @@ public final class DomainOverlay {
     private static final int HEADER_H = 15;   // height reserved for the "Borders" title
     private static final int SECTION_H = 13;  // height reserved for a "Domain Types" / "Faction Claims" header
 
-    // reflective handles into Antique Atlas 4, resolved once from the live screen
-    private static boolean reflectTried = false;
-    private static Method M_W2SX, M_W2SY, M_BOOKX, M_BOOKY, M_MAPW, M_MAPH, M_BOOKW;
-    private static int mapBorderW = 11, mapBorderH = 11;   // AtlasRenderer.MAP_BORDER_* (fallbacks)
+    /** The live atlas projection, valid only for the duration of one render pass. */
+    private static MapProjector proj;
 
     // cached border edges {chunkX, chunkZ, side(0=N,1=S,2=W,3=E), rgb}, rebuilt only when needed
     private static final List<int[]> EDGES = new ArrayList<>();
@@ -61,48 +58,16 @@ public final class DomainOverlay {
     // map); our label text yields this zone so it never smears over AA's tooltip.
     private static int[] CURSOR_EXCL = null;
 
-    private static boolean isAtlas(Screen s) {
-        return s != null && s.getClass().getName().equals(ATLAS_SCREEN);
-    }
+    private static boolean isAtlas(Screen s) { return AtlasScreenBridge.isAtlas(s); }
 
-    private static void initReflection(Screen atlas) {
-        if (reflectTried) return;
-        reflectTried = true;
-        try {
-            Class<?> c = atlas.getClass();
-            M_W2SX = c.getMethod("worldXToScreenX", double.class);
-            M_W2SY = c.getMethod("worldZToScreenY", double.class);
-            M_BOOKX = c.getMethod("bookX");
-            M_BOOKY = c.getMethod("bookY");
-            M_MAPW = c.getMethod("mapWidth");
-            M_MAPH = c.getMethod("mapHeight");
-            M_BOOKW = c.getMethod("bookWidth");
-            Class<?> rend = Class.forName(ATLAS_RENDERER);
-            try { mapBorderW = rend.getField("MAP_BORDER_WIDTH").getInt(null); } catch (Exception ignored) {}
-            try { mapBorderH = rend.getField("MAP_BORDER_HEIGHT").getInt(null); } catch (Exception ignored) {}
-        } catch (Exception e) {
-            M_W2SX = null;   // atlas API not as expected; overlay disables itself quietly
-        }
-    }
+    private static double w2sx(double worldX) { return proj.project(worldX, 0)[0]; }
 
-    private static double w2sx(Screen a, double worldX) {
-        try { return (Double) M_W2SX.invoke(a, worldX); } catch (Exception e) { return Double.NaN; }
-    }
-
-    private static double w2sy(Screen a, double worldZ) {
-        try { return (Double) M_W2SY.invoke(a, worldZ); } catch (Exception e) { return Double.NaN; }
-    }
-
-    private static int ri(Method m, Screen a) {
-        try { return (Integer) m.invoke(a); } catch (Exception e) { return 0; }
-    }
+    private static double w2sy(double worldZ) { return proj.project(0, worldZ)[1]; }
 
     /** Click a toggle button directly and consume it, so it always responds and the atlas never reacts. */
     @SubscribeEvent
     public static void onMouseClick(ScreenEvent.MouseButtonPressed.Pre event) {
         if (event.getButton() != 0 || !isAtlas(event.getScreen())) return;
-        initReflection(event.getScreen());
-        if (M_W2SX == null) return;
         Screen atlas = event.getScreen();
         int idx = legendAt(atlas, event.getMouseX(), event.getMouseY());
         if (idx >= 0) {
@@ -115,8 +80,9 @@ public final class DomainOverlay {
     public static void onRender(ScreenEvent.Render.Post event) {
         if (!isAtlas(event.getScreen())) return;
         Screen atlas = event.getScreen();
-        initReflection(atlas);
-        if (M_W2SX == null) return;
+        MapProjector p = AtlasScreenBridge.projector(atlas);
+        if (p == null) return;   // atlas not readable; overlay stands down quietly
+        proj = p;
         GuiGraphics g = event.getGuiGraphics();
 
         // Antique Atlas renders the map with a raw RenderSystem scissor and, on hover, queues a tooltip
@@ -128,12 +94,9 @@ public final class DomainOverlay {
         g.pose().last().pose().identity();
         g.pose().last().normal().identity();
         try {
-            int bx = ri(M_BOOKX, atlas), by = ri(M_BOOKY, atlas);
-            int mapW = ri(M_MAPW, atlas), mapH = ri(M_MAPH, atlas);
-            final Screen fa = atlas;
-            com.newtl.warnnobility.atlas.client.MapProjector proj =
-                    (wx, wz) -> new double[]{w2sx(fa, wx), w2sy(fa, wz)};
-            int mx0 = bx + mapBorderW, my0 = by + mapBorderH;
+            int[] box = AtlasScreenBridge.mapBox(atlas);
+            int mx0 = box[0], my0 = box[1];
+            int mapW = box[2] - box[0], mapH = box[3] - box[1];
 
             // The terrain picture goes down FIRST, under every border, label and marker: it is the page the
             // rest is drawn on. Without it Antique Atlas shows one biome texture per tile and the map reads
@@ -152,11 +115,11 @@ public final class DomainOverlay {
             boolean coloniesOn = ClientDomains.isEnabled(ClientDomains.L_COLONIES);
             if (!data.isEmpty() || !fdata.isEmpty() || (!towns.isEmpty() && coloniesOn)) {
                 rebuildIfNeeded();
-                int sx0 = bx + mapBorderW, sy0 = by + mapBorderH;
+                int sx0 = mx0, sy0 = my0;
                 g.enableScissor(sx0, sy0, sx0 + mapW, sy0 + mapH);
 
-                drawEdges(g, atlas, EDGES);
-                drawEdges(g, atlas, FACTION_EDGES);
+                drawEdges(g, EDGES);
+                drawEdges(g, FACTION_EDGES);
 
                 // All map text goes through ONE de-collision pass so nameplates never pile into a smear.
                 var font = Minecraft.getInstance().font;
@@ -167,14 +130,14 @@ public final class DomainOverlay {
                 CURSOR_EXCL = (mxp >= sx0 && mxp <= sx0 + mapW && myp >= sy0 && myp <= sy0 + mapH)
                         ? new int[]{mxp - 70, myp - 22, mxp + 160, myp + 36} : null;
                 // colony markers (only when Colonies is on), then domain labels for the toggled-on tiers
-                if (coloniesOn) for (DomainEngine.Label t : towns) drawTownMarker(g, atlas, font, t, placed);
+                if (coloniesOn) for (DomainEngine.Label t : towns) drawTownMarker(g, font, t, placed);
                 for (DomainEngine.Label l : ClientDomains.labels()) {
                     if (!ClientDomains.isEnabled(l.tier())) continue;  // 1=county,2=duchy,3=realm
-                    drawLabel(g, atlas, font, l, placed);
+                    drawLabel(g, font, l, placed);
                 }
                 // faction name labels (one per owner, centroid of its claims)
                 if (ClientDomains.isEnabled(ClientDomains.L_FACTIONS)) {
-                    for (DomainEngine.Label l : ClientDomains.factionLabels()) drawLabel(g, atlas, font, l, placed);
+                    for (DomainEngine.Label l : ClientDomains.factionLabels()) drawLabel(g, font, l, placed);
                 }
                 g.disableScissor();
             }
@@ -186,7 +149,7 @@ public final class DomainOverlay {
                     com.newtl.warnnobility.atlas.client.ClientDiscoveries.list();
             if (!discs.isEmpty() && ClientDomains.isEnabled(ClientDomains.L_STRUCTURES)) {
                 g.enableScissor(mx0, my0, mx0 + mapW, my0 + mapH);
-                double ppb = w2sx(fa, 1) - w2sx(fa, 0);   // screen pixels per world block, live from the atlas
+                double ppb = AtlasScreenBridge.pixelsPerBlock(atlas);   // the atlas's own zoom
                 boolean sketching = ppb >= com.newtl.warnnobility.atlas.client.StructureSketch.MIN_PPB;
                 if (sketching) {
                     com.newtl.warnnobility.atlas.client.StructureSketch.draw(
@@ -205,11 +168,11 @@ public final class DomainOverlay {
         }
     }
 
-    private static void drawEdges(GuiGraphics g, Screen atlas, List<int[]> edges) {
+    private static void drawEdges(GuiGraphics g, List<int[]> edges) {
         for (int[] e : edges) {
             int cx = e[0], cz = e[1], side = e[2], rgb = e[3];
-            int x0 = (int) Math.round(w2sx(atlas, cx * 16)), x1 = (int) Math.round(w2sx(atlas, (cx + 1) * 16));
-            int y0 = (int) Math.round(w2sy(atlas, cz * 16)), y1 = (int) Math.round(w2sy(atlas, (cz + 1) * 16));
+            int x0 = (int) Math.round(w2sx(cx * 16)), x1 = (int) Math.round(w2sx((cx + 1) * 16));
+            int y0 = (int) Math.round(w2sy(cz * 16)), y1 = (int) Math.round(w2sy((cz + 1) * 16));
             switch (side) {
                 case 0 -> pencilH(g, x0, x1, y0, cx, cz, 0, rgb);
                 case 1 -> pencilH(g, x0, x1, y1 - 1, cx, cz, 1, rgb);
@@ -219,10 +182,10 @@ public final class DomainOverlay {
         }
     }
 
-    private static void drawLabel(GuiGraphics g, Screen atlas, net.minecraft.client.gui.Font font,
+    private static void drawLabel(GuiGraphics g, net.minecraft.client.gui.Font font,
                                   DomainEngine.Label l, List<int[]> placed) {
-        int lx = (int) Math.round(w2sx(atlas, l.blockX()));
-        int ly = (int) Math.round(w2sy(atlas, l.blockZ()));
+        int lx = (int) Math.round(w2sx(l.blockX()));
+        int ly = (int) Math.round(w2sy(l.blockZ()));
         // marker = the tier's heraldic glyph (keep / shield / crown), tinted the holder's colour, so the
         // map markers match the legend key. Faction labels (tier 4) get the claim square.
         drawTierMarker(g, lx, ly, l.tier(), l.rgb() & 0xFFFFFF);
@@ -234,10 +197,10 @@ public final class DomainOverlay {
     }
 
     /** A small house glyph (town) at a colony centre, tinted the colony colour, with its name beneath. */
-    private static void drawTownMarker(GuiGraphics g, Screen atlas, net.minecraft.client.gui.Font font,
+    private static void drawTownMarker(GuiGraphics g, net.minecraft.client.gui.Font font,
                                        DomainEngine.Label l, List<int[]> placed) {
-        int x = (int) Math.round(w2sx(atlas, l.blockX()));
-        int y = (int) Math.round(w2sy(atlas, l.blockZ()));
+        int x = (int) Math.round(w2sx(l.blockX()));
+        int y = (int) Math.round(w2sy(l.blockZ()));
         int fill = (l.rgb() & 0xFFFFFF) | 0xFF000000;
         int line = 0xFF1A1208;
         // roof (stepped triangle)
@@ -482,10 +445,24 @@ public final class DomainOverlay {
         return -1;
     }
 
-    /** Legend anchor in SCREEN-pixel space (matches GuiGraphics), NOT the atlas's scaled book coords.
-     *  A fixed inset into the upper-left parchment corner: stable, on-screen, off the circular map. */
+    /**
+     * Legend anchor: pinned just OUTSIDE the book's left edge, tracking the page rather than the screen.
+     *
+     * <p>Atlas 4 sized its book to the whole window, so the legend sat comfortably on the page. Atlas 8's
+     * book is 310px wide and the legend is ~110px of that, so putting it on the page (as this first did)
+     * simply buries the map under it. Until the book can be enlarged, it lives beside the book: still
+     * attached to it, never covering it. If the legend would fall off the left of the screen, it flips to
+     * the book's right side.
+     */
     private static int[] legendPos(Screen atlas) {
-        return new int[]{ Math.max(8, atlas.width / 10), Math.max(8, atlas.height / 9) };
+        int[] box = AtlasScreenBridge.mapBox(atlas);
+        int mapW = box[2] - box[0];
+        // On a page wide enough to spare the room, sit ON the map like Atlas 4 did. On the small book the
+        // legend is a third of the page, so it goes beside it rather than burying the map.
+        if (mapW >= LEGEND_W * 3) return new int[]{ box[0] + 8, box[1] + 8 };
+        int lx = box[0] - LEGEND_W - 20;
+        if (lx < 8) lx = box[2] + 20;   // no room on the left; sit on the right
+        return new int[]{ lx, box[1] };
     }
 
     // ---- colored-pencil strokes ----------------------------------------------

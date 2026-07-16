@@ -54,6 +54,10 @@ dependencies {
             "${instMods}/blockui-1.0.211-1.21.1-snapshot.jar",
             "${instMods}/domum-ornamentum-1.0.234-snapshot-main.jar",
             "${instMods}/WarNTaxes-NeoForge-5.0.2.jar",
-            "${instMods}/easy_factions-NeoForge-1.0.3.jar"
+            "${instMods}/easy_factions-NeoForge-1.0.3.jar",
+            // Antique Atlas 8, needed ONLY so GuiAtlasSizeMixin can name ITexture in a @Redirect signature.
+            // Everything else talks to the atlas by reflection and stays fail-soft; the reference is confined
+            // to that mixin, which simply never applies when the atlas is absent.
+            "${instMods}/Antique Atlas-1.21.1-8.0.1-NeoForge.jar"
     )
 }

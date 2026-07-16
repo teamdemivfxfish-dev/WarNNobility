@@ -75,6 +75,7 @@ public final class MapRaster {
     private static final Map<Long, Tile> CACHE = new HashMap<>();
     private static ResourceLocation cachedDim;
     private static int builtThisDraw;
+    private static boolean loggedDraw, loggedPainted;
 
     /** Whether the layer can draw at all (Surveyor present). Lets callers hide a toggle that would do nothing. */
     public static boolean available() { return SurveyorTerrain.available(); }
@@ -108,7 +109,20 @@ public final class MapRaster {
         int minRZ = Math.floorDiv((int) Math.floor((clipY0 - origin[1]) / pxPerBlockZ), REGION_BLOCKS);
         int maxRZ = Math.floorDiv((int) Math.ceil((clipY1 - origin[1]) / pxPerBlockZ), REGION_BLOCKS);
         long span = (long) (maxRX - minRX + 1) * (maxRZ - minRZ + 1);
-        if (span <= 0 || span > MAX_REGIONS_PER_DRAW) return;
+        if (span <= 0 || span > MAX_REGIONS_PER_DRAW) {
+            if (!loggedDraw) {
+                loggedDraw = true;
+                WarNNobility.LOGGER.warn("[WnN] terrain: refusing to draw, span={} regions (ppb={})", span, pxPerBlockX);
+            }
+            return;
+        }
+        // One line, once per session: it separates "the geometry is wrong" from "Surveyor has no data here",
+        // which look identical on screen (a blank map) and are otherwise silent because every read is caught.
+        if (!loggedDraw) {
+            loggedDraw = true;
+            WarNNobility.LOGGER.info("[WnN] terrain first draw: ppb={} regionsX[{}..{}] regionsZ[{}..{}] span={}",
+                    pxPerBlockX, minRX, maxRX, minRZ, maxRZ, span);
+        }
 
         // Build outward from the middle of the view, so what you are looking at resolves first and a fast
         // drag fills toward the edges rather than from an arbitrary corner.
@@ -187,6 +201,10 @@ public final class MapRaster {
         if (!any) {
             if (reuse == null) tex.close();
             return null;
+        }
+        if (!loggedPainted) {
+            loggedPainted = true;
+            WarNNobility.LOGGER.info("[WnN] terrain: first region painted from Surveyor data at region {},{}", rx, rz);
         }
         tex.upload();
         if (reuse != null) return new Tile(reuse.rl(), tex, System.currentTimeMillis());

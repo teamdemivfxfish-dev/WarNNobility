@@ -64,6 +64,9 @@ public final class Config {
     /** Real minutes before an already-surveyed chunk is scanned again (to catch new/expanded builds). */
     public static final ModConfigSpec.IntValue STRUCTURE_RESURVEY_MINUTES;
 
+    /** Enlarge the Antique Atlas book to fill the window, the way Antique Atlas 4 sized its own. */
+    public static final ModConfigSpec.BooleanValue ATLAS_BIG_BOOK;
+
     /** Draw the real per-block terrain picture on the atlas / War Frame (needs Surveyor, which AA ships on). */
     public static final ModConfigSpec.BooleanValue ATLAS_TERRAIN_ENABLED;
 
@@ -175,6 +178,11 @@ public final class Config {
         b.pop();
 
         b.push("atlas");
+        ATLAS_BIG_BOOK = b.comment(
+                        "Enlarge the Antique Atlas book to fill the window (90% of it), instead of the small",
+                        "fixed-size book it draws by default. This is the size Antique Atlas 4 used, and a",
+                        "war map you cannot read is not worth opening. Turn off for the atlas's normal book.")
+                .define("atlas_big_book", true);
         ATLAS_STRUCTURES_ENABLED = b.comment(
                         "Detect PLAYER-BUILT structures and mark them on the Antique Atlas map (and the War Frame).",
                         "The world is an empty field until you walk near a build: the server surveys the ground",
