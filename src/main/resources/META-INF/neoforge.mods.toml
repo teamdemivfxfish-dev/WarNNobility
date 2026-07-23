@@ -9,11 +9,11 @@ config = "warnnobility.mixins.json"
 
 [[mods]]
 modId = "warnnobility"
-version = "1.0.7"
+version = "1.0.4"
 displayName = "War 'n Nobility"
 authors = "NewtL"
 description = '''
-A noble-rank and vassalage progression system built on the MineColonies + War 'n Taxes + Easy Factions ecosystem. Win War 'n Taxes vassalization wars to take your peers as vassals and climb from outsider to emperor; lead an Easy Factions faction to claim the crown; see your county/duchy/kingdom drawn on the Antique Atlas 4 map. Requires MineColonies, War 'n Taxes, and Easy Factions.
+A noble-rank and vassalage progression system built on the MineColonies + War 'n Taxes + Easy Factions ecosystem. Win War 'n Taxes vassalization wars to take your peers as vassals and climb from outsider to emperor; lead an Easy Factions faction to claim the crown; plan campaigns by drawing on the War Frame board. Requires MineColonies, War 'n Taxes, and Easy Factions.
 '''
 
 [[dependencies.warnnobility]]
@@ -39,17 +39,6 @@ type = "required"
 versionRange = "*"
 ordering = "AFTER"
 side = "BOTH"
-
-# OPTIONAL (CLIENT side only): the nobility-domain MAP overlay renders on Antique Atlas 4. AA4 on NeoForge
-# is a Fabric mod via Sinytra Connector, so it transitively pulls in connector + forgified-fabric-api +
-# surveyor. AA is reached purely by reflection (no compile dep) and every draw is fail-soft, so when it is
-# absent the map falls back to a plain parchment backdrop and everything else still works.
-[[dependencies.warnnobility]]
-modId = "antique_atlas"
-type = "optional"
-versionRange = "*"
-ordering = "AFTER"
-side = "CLIENT"
 
 # REQUIRED: Machiavelli's War 'n Taxes (its @Mod id is "minecolonytax", NOT "warntaxes"). It runs the wars
 # whose outcomes WarTaxesBridge turns into seals, and it transitively pulls in FTB Teams + MineColonies.

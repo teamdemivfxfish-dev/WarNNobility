@@ -11,8 +11,7 @@
     "HywActionListMixin",
     "HywMouseControlInfoMixin",
     "GuiOverlayMessageMixin",
-    "VassalsPageMixin",
-    "GuiAtlasSizeMixin"
+    "VassalsPageMixin"
   ],
   "injectors": {
     "defaultRequire": 0

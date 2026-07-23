@@ -47,35 +47,6 @@ public final class Config {
     /** King (CROWN) gate: consume the Crown on coronation (vs merely require bearing it). */
     public static final ModConfigSpec.BooleanValue KING_CONSUME_CROWN;
 
-    // --- Antique Atlas player-structure detection -------------------------------------------------
-
-    /** Master switch: survey the world for player-built structures and mark them on the atlas / War Frame. */
-    public static final ModConfigSpec.BooleanValue ATLAS_STRUCTURES_ENABLED;
-
-    /** How far (blocks) around a player the survey scans when they enter fresh ground. */
-    public static final ModConfigSpec.IntValue STRUCTURE_SCAN_RADIUS;
-
-    /** Minimum structural blocks a cluster needs to count as a building (filters lone walls / shacks). */
-    public static final ModConfigSpec.IntValue STRUCTURE_MIN_BLOCKS;
-
-    /** How close (blocks) a player must come before a discovered structure is revealed on their atlas. */
-    public static final ModConfigSpec.IntValue STRUCTURE_REVEAL_RADIUS;
-
-    /** Real minutes before an already-surveyed chunk is scanned again (to catch new/expanded builds). */
-    public static final ModConfigSpec.IntValue STRUCTURE_RESURVEY_MINUTES;
-
-    /** Enlarge the Antique Atlas book to fill the window, the way Antique Atlas 4 sized its own. */
-    public static final ModConfigSpec.BooleanValue ATLAS_BIG_BOOK;
-
-    /** Draw the real per-block terrain picture on the atlas / War Frame (needs Surveyor, which AA ships on). */
-    public static final ModConfigSpec.BooleanValue ATLAS_TERRAIN_ENABLED;
-
-    /** Opacity (0-255) of the terrain picture over the atlas parchment. */
-    public static final ModConfigSpec.IntValue ATLAS_TERRAIN_ALPHA;
-
-    /** How much of the world's true colour survives the parchment grading (0 = sepia plate, 100 = vanilla map). */
-    public static final ModConfigSpec.IntValue ATLAS_TERRAIN_SATURATION;
-
     static {
         ModConfigSpec.Builder b = new ModConfigSpec.Builder();
 
@@ -175,49 +146,6 @@ public final class Config {
                         "King (CROWN) gate: consume the Crown at coronation. False = the King just has to bear",
                         "one (it is not eaten), letting a single Crown crown several kings over time.")
                 .define("king_consume_crown", true);
-        b.pop();
-
-        b.push("atlas");
-        ATLAS_BIG_BOOK = b.comment(
-                        "Enlarge the Antique Atlas book to fill the window (90% of it), instead of the small",
-                        "fixed-size book it draws by default. This is the size Antique Atlas 4 used, and a",
-                        "war map you cannot read is not worth opening. Turn off for the atlas's normal book.")
-                .define("atlas_big_book", true);
-        ATLAS_STRUCTURES_ENABLED = b.comment(
-                        "Detect PLAYER-BUILT structures and mark them on the Antique Atlas map (and the War Frame).",
-                        "The world is an empty field until you walk near a build: the server surveys the ground",
-                        "around you, finds houses/keeps/farms by their materials, and reveals a marker only once",
-                        "you have come close. Needs Antique Atlas (+ Surveyor) installed; harmless when absent.")
-                .define("atlas_structures_enabled", true);
-        STRUCTURE_SCAN_RADIUS = b.comment(
-                        "Blocks around a player scanned for structures when they enter fresh ground. Bigger =",
-                        "finds larger builds in one pass but costs more per survey.")
-                .defineInRange("structure_scan_radius", 32, 8, 96);
-        STRUCTURE_MIN_BLOCKS = b.comment(
-                        "Minimum structural blocks (walls/floors/roof) a cluster needs to be logged as a building.")
-                .defineInRange("structure_min_blocks", 40, 8, 100000);
-        STRUCTURE_REVEAL_RADIUS = b.comment(
-                        "How close (blocks) a player must come before a discovered structure appears on their atlas.")
-                .defineInRange("structure_reveal_radius", 96, 16, 512);
-        STRUCTURE_RESURVEY_MINUTES = b.comment(
-                        "Minutes before an already-surveyed chunk is scanned again, to catch new or expanded builds.")
-                .defineInRange("structure_resurvey_minutes", 10, 1, 1440);
-        ATLAS_TERRAIN_ENABLED = b.comment(
-                        "Draw the REAL terrain on the atlas: every surveyed column painted in its own block",
-                        "colour, shaded like a vanilla map, then washed onto the parchment. Antique Atlas by",
-                        "itself picks one texture per tile from the biome, so builds, roads and farms are",
-                        "invisible on it; this is what makes the page readable. Costs nothing to survey (it",
-                        "reads the map data Antique Atlas already keeps) and respects its fog of war.")
-                .define("atlas_terrain_enabled", true);
-        ATLAS_TERRAIN_ALPHA = b.comment(
-                        "Opacity of the terrain picture over the parchment. Lower lets more of the atlas's own",
-                        "styling show through; 255 is a solid map.")
-                .defineInRange("atlas_terrain_alpha", 210, 0, 255);
-        ATLAS_TERRAIN_SATURATION = b.comment(
-                        "How much of the world's true colour survives the antique grading. 0 = a sepia plate,",
-                        "100 = a plain vanilla map. The default keeps the aged look while leaving wood, stone",
-                        "and water clearly tellable apart.")
-                .defineInRange("atlas_terrain_saturation", 45, 0, 100);
         b.pop();
 
         SPEC = b.build();
