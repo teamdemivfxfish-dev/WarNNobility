@@ -71,7 +71,14 @@ public final class ModEvents {
         for (ServerPlayer p : server.getPlayerList().getPlayers()) {
             NobleData d = m.getOrCreate(p);
             String key = m.rankName(d) + "|" + d.female + "|" + m.rankColor(d);
-            if (!key.equals(lastTitle.put(p.getUUID(), key))) changed.add(p);
+            if (!key.equals(lastTitle.put(p.getUUID(), key))) {
+                // Clear the cached, NameFormat-decorated display name. NeoForge caches getDisplayName(),
+                // so on a rank change every consumer that reads it -- the above-head nametag, and any
+                // third-party chat mod that renders "<displayName>" instead of routing through our
+                // ServerChatEvent handler -- would otherwise keep showing the stale "[old rank]" prefix.
+                p.refreshDisplayName();
+                changed.add(p);
+            }
         }
         if (!changed.isEmpty()) {
             server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(
