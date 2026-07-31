@@ -46,14 +46,15 @@ neoForge {
 // are NOT committed to this repo. Point 'deps_dir' at a folder that contains them: set it in your
 // ~/.gradle/gradle.properties (e.g. deps_dir=C:/path/to/mods) or pass -Pdeps_dir=... on the command line.
 // See README -> Building for the exact jar list. The default is NewtL's local instance.
-def instMods = project.findProperty('deps_dir') ?: 'D:/Mods/Instances/Warborn RTS Sandbox/mods'
+def instMods = project.findProperty('deps_dir') ?: 'D:/Mods/Instances/The Warborn Realms SMP/mods'
 dependencies {
-    compileOnly files(
-            "${instMods}/minecolonies-1.1.1319-1.21.1.jar",
-            "${instMods}/structurize-1.0.830-1.21.1.jar",
-            "${instMods}/blockui-1.0.211-1.21.1-snapshot.jar",
-            "${instMods}/domum-ornamentum-1.0.234-snapshot-main.jar",
-            "${instMods}/WarNTaxes-NeoForge-5.0.2.jar",
-            "${instMods}/easy_factions-NeoForge-1.0.3.jar"
-    )
+    // Matched by prefix so routine dep updates in the instance don't break the build.
+    compileOnly fileTree(dir: instMods, include: [
+            'minecolonies-*.jar',
+            'structurize-*.jar',
+            'blockui-*.jar',
+            'domum-ornamentum-*.jar',
+            'WarNTaxes-*.jar',
+            'easy_factions-*.jar'
+    ])
 }
