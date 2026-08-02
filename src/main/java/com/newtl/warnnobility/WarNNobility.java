@@ -88,6 +88,11 @@ public class WarNNobility {
 
     public WarNNobility(IEventBus modBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        // Cosmetic, per-player switches (currently the HYW command overlay). Client-side only: a dedicated
+        // server never reads them, so it never registers the spec either.
+        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+            modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
+        }
 
         BLOCKS.register(modBus);
         ITEMS.register(modBus);

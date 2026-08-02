@@ -65,8 +65,21 @@ public final class HywF4Bridge {
         }
     }
 
-    /** True while the local player is in HYW's freecam / F4 RTS mode. */
+    /**
+     * True while our command overlay should be up: the player is in HYW freecam AND they have not switched
+     * the overlay off. This is the single gate the HUD and all three HYW-suppression mixins already ask, so
+     * turning {@code hyw_command_hud} off in the client config hides our HUD and simultaneously hands HYW
+     * back its own action list, mouse legend and action-bar messages.
+     */
     public static boolean active() {
+        return inFreecam() && com.newtl.warnnobility.ClientConfig.hywCommandHud();
+    }
+
+    /**
+     * True while the local player is in HYW's freecam / F4 RTS mode, regardless of the overlay switch. The
+     * Alt+H toggle listens on this, so the overlay can be turned back ON from inside freecam.
+     */
+    public static boolean inFreecam() {
         if (!LOADED || broken) return false;
         ensureInit();
         if (broken) return false;

@@ -232,6 +232,11 @@ public final class F4CommandHud {
         if (atk.isEmpty()) atk = "A";
         String l1 = "§7Fly: hold §eRight-Click§7 + move keys · §eMouse Wheel§7 sets speed";
         String l2 = "§7Select: §eLeft-Click§7 or drag · Move: §eRight-Click§7 · Attack: §e" + atk + " + Left-Click";
+        // Advertise the hide key on the strip itself, so a player who wants HYW's stock UI back can find it
+        // without reading the config. Dropped when the hotkey is switched off, so the hint never lies.
+        if (com.newtl.warnnobility.ClientConfig.hywCommandHudHotkey()) {
+            l2 = l2 + " §8· §7Hide this overlay: §eAlt+H";
+        }
         int lh = font.lineHeight + 2;
         // Sit the block just ABOVE the vanilla health/armour row (which tops out ~50px from the bottom),
         // with a clean gap so it doesn't crowd the hearts.
@@ -373,11 +378,35 @@ public final class F4CommandHud {
         return mx >= mp - 2 && mx <= mp + size + 2 && my >= myp - 2 && my <= myp + size + 2;
     }
 
-    /** Zoom the minimap with Alt + '='/'-' (scroll is eaten by HYW in freecam). */
+    /**
+     * Alt-chords inside HYW freecam: '='/'-' zoom the minimap (the scroll wheel is eaten by HYW), and 'H'
+     * toggles the whole overlay off and on again.
+     *
+     * <p>The toggle deliberately gates on {@link HywF4Bridge#inFreecam()} rather than
+     * {@link HywF4Bridge#active()}: once the overlay is off, {@code active()} is false, so keying off it
+     * would leave no way back in short of editing the config file. The zoom keys stay on {@code active()}
+     * since there is no minimap to zoom while the overlay is hidden. The confirmation goes to CHAT, not the
+     * action bar, because {@code GuiOverlayMessageMixin} swallows action-bar text while the overlay is up.
+     */
     @SubscribeEvent
     public static void onKey(net.neoforged.neoforge.client.event.InputEvent.Key e) {
         if (e.getAction() != org.lwjgl.glfw.GLFW.GLFW_PRESS) return;
         if ((e.getModifiers() & org.lwjgl.glfw.GLFW.GLFW_MOD_ALT) == 0) return;
+
+        if (e.getKey() == org.lwjgl.glfw.GLFW.GLFW_KEY_H
+                && com.newtl.warnnobility.ClientConfig.hywCommandHudHotkey()
+                && HywF4Bridge.inFreecam()) {
+            boolean on = com.newtl.warnnobility.ClientConfig.toggleHywCommandHud();
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null) {
+                mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                        on ? "War 'n Nobility command overlay: on"
+                           : "War 'n Nobility command overlay: off (Alt+H to bring it back)")
+                        .withStyle(net.minecraft.ChatFormatting.GOLD), false);
+            }
+            return;
+        }
+
         if (!HywF4Bridge.active()) return;
         int key = e.getKey();
         if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_EQUAL || key == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ADD) {
