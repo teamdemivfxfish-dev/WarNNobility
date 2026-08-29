@@ -114,6 +114,11 @@ over. A higher noble beating a lower one binds them immediately; a lower noble c
 `VassalsPageMixin` tags each still-provisional colony **(Provisional)** in War 'n Taxes' own tax-book
 vassal page, drawn by War 'n Taxes with no change to its code.
 
+Working on the War 'n Taxes side? [docs/WAR-N-TAXES.md](docs/WAR-N-TAXES.md) is the whole seam written out:
+the three `VassalManager` calls this mod depends on, what already works without any change over there
+(a War 'n Taxes vassal already renders inside its liege's domain on the map), and what would let the poll
+be replaced by a lookup.
+
 ### Feudal war protection
 
 With `protect_higher_rank_from_war` on, `WarSystemMixin` cancels a War 'n Taxes war declared on a colony
@@ -245,7 +250,7 @@ point Gradle at the folder that holds them.
 3. Point Gradle at a Java 21 JDK: `org.gradle.java.home=...` in `~/.gradle/gradle.properties`, or set
    `JAVA_HOME`, or let the toolchain resolve one.
 
-The jar lands in `build/libs/warnnobility-neoforge-1.0.7.jar`.
+The jar lands in `build/libs/warnnobility-neoforge-<mod_version>.jar`.
 
 ## License
 
