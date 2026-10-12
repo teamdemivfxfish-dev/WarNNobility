@@ -9,11 +9,11 @@ config = "warnnobility.mixins.json"
 
 [[mods]]
 modId = "warnnobility"
-version = "1.1.1"
+version = "1.1.2"
 displayName = "War 'n Nobility"
 authors = "NewtL"
 description = '''
-A noble-rank and vassalage progression system built on the MineColonies + War 'n Taxes + Easy Factions ecosystem. Win War 'n Taxes vassalization wars to take your peers as vassals and climb from outsider to emperor; lead an Easy Factions faction to claim the crown; plan campaigns by drawing on the War Frame board. Requires MineColonies, War 'n Taxes, and Easy Factions.
+A noble-rank and vassalage progression system built on the MineColonies + War 'n Taxes + Holdfast Factions ecosystem. Win War 'n Taxes vassalization wars to take your peers as vassals and climb from outsider to emperor; lead an Holdfast Factions faction to claim the crown; plan campaigns by drawing on the War Frame board. Requires MineColonies, War 'n Taxes, and Holdfast Factions.
 '''
 
 [[dependencies.warnnobility]]
@@ -31,7 +31,7 @@ ordering = "NONE"
 side = "BOTH"
 
 # REQUIRED: the colony system this mod reads for territory and the War 'n Taxes wars that drive seals.
-# War 'n Nobility is built to run on the MineColonies + War 'n Taxes + Easy Factions ecosystem, so these
+# War 'n Nobility is built to run on the MineColonies + War 'n Taxes + Holdfast Factions ecosystem, so these
 # three are hard requirements.
 [[dependencies.warnnobility]]
 modId = "minecolonies"
@@ -49,11 +49,11 @@ versionRange = "*"
 ordering = "AFTER"
 side = "BOTH"
 
-# OPTIONAL: Easy Factions backs the King gate (lead a faction over the claim threshold) and the faction
+# OPTIONAL: Holdfast Factions backs the King gate (lead a faction over the claim threshold) and the faction
 # map overlay. Every reference is isolated behind FactionGate.loaded() so the King gate simply stays
-# dormant when EF is absent; the rest of the nobility ladder runs standalone.
+# dormant when Holdfast is absent; the rest of the nobility ladder runs standalone.
 [[dependencies.warnnobility]]
-modId = "easy_factions"
+modId = "holdfast_factions"
 type = "optional"
 versionRange = "*"
 ordering = "AFTER"

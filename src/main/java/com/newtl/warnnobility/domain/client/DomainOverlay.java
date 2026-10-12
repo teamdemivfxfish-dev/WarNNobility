@@ -52,7 +52,7 @@ public final class DomainOverlay {
 
     // cached border edges {chunkX, chunkZ, side(0=N,1=S,2=W,3=E), rgb}, rebuilt only when needed
     private static final List<int[]> EDGES = new ArrayList<>();
-    private static final List<int[]> FACTION_EDGES = new ArrayList<>();   // Easy Factions claim borders
+    private static final List<int[]> FACTION_EDGES = new ArrayList<>();   // Holdfast Factions claim borders
     private static int builtVersion = -1;
 
     // The screen-space rect where Antique Atlas draws its hover tooltip this frame (null = not hovering the
@@ -254,7 +254,7 @@ public final class DomainOverlay {
     /** The current toggled-on domain border edges, rebuilt as needed. Shared with the in-hand overlay. */
     public static List<int[]> borderEdges() { rebuildIfNeeded(); return EDGES; }
 
-    /** The current Easy Factions claim border edges (only populated while the Factions layer is on). */
+    /** The current Holdfast Factions claim border edges (only populated while the Factions layer is on). */
     public static List<int[]> factionBorderEdges() { rebuildIfNeeded(); return FACTION_EDGES; }
 
     private static void rebuildIfNeeded() {
@@ -280,7 +280,7 @@ public final class DomainOverlay {
             if (neighKey(data, cx + 1, cz) != myKey) EDGES.add(new int[]{cx, cz, 3, rgb});
         }
 
-        // Easy Factions claims: their own chunk map, region = faction id at index 2, rgb at index 3.
+        // Holdfast Factions claims: their own chunk map, region = faction id at index 2, rgb at index 3.
         FACTION_EDGES.clear();
         if (ClientDomains.isEnabled(ClientDomains.L_FACTIONS)) {
             Map<Long, int[]> fd = ClientDomains.factionData();

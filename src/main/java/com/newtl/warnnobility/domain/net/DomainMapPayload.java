@@ -22,7 +22,7 @@ import java.util.List;
  * level N (0 = none) and cN = a packed colour (-1 = none), level order = colonies/counties/duchies/
  * kingdoms. Each label is {@code (tier, blockX, blockZ, rgb, name)} with tier 1=county/2=duchy/3=realm.
  *
- * <p>Easy Factions claims are NOT carried here: they ride their own {@code FactionMapPayload} so the
+ * <p>Holdfast Factions claims are NOT carried here: they ride their own {@code FactionMapPayload} so the
  * faction overlay is fully independent of MineColonies (see {@code domain/FactionEngine}).
  */
 public record DomainMapPayload(ResourceLocation dimension, List<int[]> entries, List<DomainEngine.Label> labels,

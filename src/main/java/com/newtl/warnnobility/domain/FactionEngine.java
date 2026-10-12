@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Easy Factions claim engine for the Antique Atlas overlay. This is deliberately INDEPENDENT of
+ * Holdfast Factions claim engine for the Antique Atlas overlay. This is deliberately INDEPENDENT of
  * {@link DomainEngine}: it never names a MineColonies type, so faction claims are computed and pushed
  * whether or not MineColonies is installed, present, or healthy. (Previously faction claims rode inside
  * the MineColonies recompute, so a missing/throwing colony engine silently took the faction overlay down
- * with it. This build splits them so the Factions layer stands on its own -- gated only on Easy Factions.)
+ * with it. This build splits them so the Factions layer stands on its own -- gated only on Holdfast Factions.)
  *
- * <p>Every Easy Factions reference lives inside {@link FactionClaims} and runs only after the
- * {@code easy_factions} gate, so this class loads and no-ops cleanly when Easy Factions is absent.
+ * <p>Every Holdfast Factions reference lives inside {@link FactionClaims} and runs only after the
+ * {@code holdfast_factions} gate, so this class loads and no-ops cleanly when Holdfast Factions is absent.
  */
 public final class FactionEngine {
 
@@ -33,7 +33,7 @@ public final class FactionEngine {
      * crosses into a dimension with no claims, or after claims are removed.
      */
     public static void recompute(MinecraftServer server) {
-        if (server == null || !ModList.get().isLoaded("easy_factions")) return;
+        if (server == null || !ModList.get().isLoaded("holdfast_factions")) return;
 
         // Compute once per distinct dimension that a player is actually in, then fan out to its players.
         Map<ResourceKey<Level>, FactionMapPayload> cache = new HashMap<>();

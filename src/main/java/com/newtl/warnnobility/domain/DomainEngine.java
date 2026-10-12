@@ -62,7 +62,7 @@ public final class DomainEngine {
             byDim.computeIfAbsent(c.getDimension(), k -> new ArrayList<>()).add(c);
         }
 
-        // Easy Factions claims are handled by FactionEngine (its own packet), fully decoupled from this
+        // Holdfast Factions claims are handled by FactionEngine (its own packet), fully decoupled from this
         // MineColonies recompute, so this engine only walks colony domains.
         Set<ResourceKey<Level>> dims = new HashSet<>(byDim.keySet());
 

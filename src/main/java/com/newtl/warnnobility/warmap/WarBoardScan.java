@@ -22,7 +22,7 @@ import java.util.UUID;
  * {@code Units} payload (which {@link com.newtl.warnnobility.warmap.client.ClientUnits} then draws/bakes).
  *
  * <p>HYW units are grouped by formation (fallback: owner, then individual) into one banner each; colonists
- * are plain civilian dots. Allegiance is <b>owner + Easy Factions</b> relative to the board's current
+ * are plain civilian dots. Allegiance is <b>owner + Holdfast Factions</b> relative to the board's current
  * controller (the physical board is one shared image, so it is anchored to whoever holds the floor); with
  * no controller everything reads as "other". HYW/EF are reached fail-soft, so this degrades to colonists
  * only (or nothing) when those mods are absent.
@@ -84,7 +84,7 @@ public final class WarBoardScan {
     /**
      * Collect the live HYW combat units that make up one on-map unit (the group whose {@link
      * HywServerUnits#groupKey} equals {@code key}), for a wall-map order. Only units the commander may
-     * lawfully command are returned: owned by them or an ally (Easy Factions), never wild/enemy troops.
+     * lawfully command are returned: owned by them or an ally (Holdfast Factions), never wild/enemy troops.
      * Uses the same board area + key derivation as {@link #scanAndSend}, so what you see is what you command.
      */
     public static List<LivingEntity> collectGroup(ServerLevel level, WarMapData data, String key, UUID commander) {

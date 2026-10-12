@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Server -> client, Easy Factions claim layer ONLY. Carried in its own packet (separate from
+ * Server -> client, Holdfast Factions claim layer ONLY. Carried in its own packet (separate from
  * {@link DomainMapPayload}) so faction claims are computed and pushed independently of MineColonies:
  * the colony-domain engine can be absent, throwing, or simply have no colonies, and faction borders
  * still reach the atlas. One payload per dimension a player occupies; an empty list clears stale claims.

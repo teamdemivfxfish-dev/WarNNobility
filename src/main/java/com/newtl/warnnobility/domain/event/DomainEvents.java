@@ -58,12 +58,12 @@ public final class DomainEvents {
         } catch (Throwable ignored) {
             // MineColonies / Antique Atlas may not be installed or ready yet; try again next cycle
         }
-        // Easy Factions claim borders. Fully independent path (no MineColonies), gated only on EF, so
+        // Holdfast Factions claim borders. Fully independent path (no MineColonies), gated only on EF, so
         // faction claims reach the atlas even with MineColonies absent or erroring.
         try {
             FactionEngine.recompute(server);
         } catch (Throwable ignored) {
-            // Easy Factions absent or not ready yet; try again next cycle
+            // Holdfast Factions absent or not ready yet; try again next cycle
         }
     }
 }

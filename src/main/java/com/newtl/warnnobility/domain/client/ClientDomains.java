@@ -21,7 +21,7 @@ public final class ClientDomains {
     public static final int L_COUNTIES = 1;
     public static final int L_DUCHIES = 2;
     public static final int L_KINGDOMS = 3;
-    public static final int L_FACTIONS = 4;   // Easy Factions claims (separate layer)
+    public static final int L_FACTIONS = 4;   // Holdfast Factions claims (separate layer)
 
     private static ResourceLocation dimension;
     private static Map<Long, int[]> data = new HashMap<>();
@@ -42,7 +42,7 @@ public final class ClientDomains {
         version++;
     }
 
-    /** Easy Factions claims arrive separately (FactionMapPayload) so they are independent of MineColonies. */
+    /** Holdfast Factions claims arrive separately (FactionMapPayload) so they are independent of MineColonies. */
     public static void acceptFactions(com.newtl.warnnobility.domain.net.FactionMapPayload msg) {
         Map<Long, int[]> fm = new HashMap<>();
         for (int[] e : msg.factionEntries()) fm.put(ChunkPos.asLong(e[0], e[1]), e);

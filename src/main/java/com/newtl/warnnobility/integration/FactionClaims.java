@@ -1,8 +1,8 @@
 package com.newtl.warnnobility.integration;
 
-import com.jpreiss.easy_factions.server.claims.ClaimManager;
-import com.jpreiss.easy_factions.server.claims.model.ClaimData;
-import com.jpreiss.easy_factions.server.claims.model.ClaimType;
+import dev.xmat5.holdfast.server.claims.ClaimManager;
+import dev.xmat5.holdfast.server.claims.model.ClaimData;
+import dev.xmat5.holdfast.server.claims.model.ClaimType;
 import com.newtl.warnnobility.domain.DomainEngine;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Reads Easy Factions / Territory-Table claimed chunks for the Domain Atlas "Factions" overlay. Every
- * Easy Factions type stays inside method bodies and is reached only after {@link FactionGate#loaded()},
- * so this is dormant (returns empty) when Easy Factions is absent.
+ * Reads Holdfast Factions / Territory-Table claimed chunks for the Domain Atlas "Factions" overlay. Every
+ * Holdfast Factions type stays inside method bodies and is reached only after {@link FactionGate#loaded()},
+ * so this is dormant (returns empty) when Holdfast Factions is absent.
  *
  * <p><b>Colour fix (1.0.3):</b> the overlay now colours every claim by its OWN stored colour
  * ({@link ClaimData#color}) -- the exact colour the player picked in the Territory Table -- instead of

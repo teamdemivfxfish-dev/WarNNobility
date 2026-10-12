@@ -38,7 +38,7 @@ public final class Config {
     /** Block declaring a War 'n Taxes BESIEGE on a colony whose owner outranks the declarer (no seal is gained by it). */
     public static final ModConfigSpec.BooleanValue PROTECT_HIGHER_RANK_FROM_BESIEGE;
 
-    /** King (CROWN) gate: require leading an Easy Factions faction. Ignored if Easy Factions is absent. */
+    /** King (CROWN) gate: require leading a Holdfast Factions faction. Ignored if Holdfast Factions is absent. */
     public static final ModConfigSpec.BooleanValue KING_REQUIRES_FACTION;
 
     /** King (CROWN) gate: claimed-chunk threshold the claimant's faction must hold. */
@@ -63,7 +63,7 @@ public final class Config {
                         "               those sealers become your sentenced vassals (County/Duchy/Kingdom)",
                         "  BUYIN      = pay param of the buyin_item, consumed on promote (unused default)",
                         "  SCORE      = your score must have reached param (unused default; no war here)",
-                        "  CROWN      = the King step: param same-rank (Duke) seals AND lead an Easy Factions",
+                        "  CROWN      = the King step: param same-rank (Duke) seals AND lead a Holdfast Factions",
                         "               faction over the claim threshold AND consume a Crown (see config below)",
                         "  HIGHEST    = the Emperor seat. The FIRST King is crowned automatically; after",
                         "               that the throne only changes through a usurpation challenge.",
@@ -135,7 +135,7 @@ public final class Config {
                 .define("protect_higher_rank_from_besiege", true);
 
         KING_REQUIRES_FACTION = b.comment(
-                        "King (CROWN) gate: the claimant must LEAD (own) an Easy Factions faction. If Easy",
+                        "King (CROWN) gate: the claimant must LEAD (own) a Holdfast Factions faction. If Holdfast",
                         "Factions is not installed, this half of the gate is skipped and King needs only the",
                         "Duke seals + the Crown.")
                 .define("king_requires_faction", true);

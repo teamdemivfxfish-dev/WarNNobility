@@ -16,9 +16,9 @@ package com.newtl.warnnobility.nobility;
  *   <li>{@link #SCORE}   - the player's score must have reached {@code param}. Kept for config
  *       flexibility; the default ladder has no score gates and no war to earn score.</li>
  *   <li>{@link #CROWN}   - the King step. Like SUPPORT ({@code param} same-rank seals, i.e. Dukes),
- *       but ALSO gated: the claimant must lead an Easy Factions faction with enough claimed chunks
+ *       but ALSO gated: the claimant must lead a Holdfast Factions faction with enough claimed chunks
  *       and consume a Crown (crafted from a Shard of the Crown of Unification). The faction half is
- *       skipped if Easy Factions is absent, so the ladder still works standalone.</li>
+ *       skipped if Holdfast Factions is absent, so the ladder still works standalone.</li>
  *   <li>{@link #HIGHEST} - never promoted manually; this is the Emperor seat. The FIRST King is
  *       crowned automatically; afterwards the throne only changes through a usurpation.</li>
  * </ul>
