@@ -3,11 +3,11 @@ package com.newtl.warnnobility.domain;
 import com.newtl.warnnobility.domain.net.DomainNetwork;
 import com.newtl.warnnobility.domain.net.FactionMapPayload;
 import com.newtl.warnnobility.integration.FactionClaims;
+import com.newtl.warnnobility.integration.FactionGate;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.ModList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +33,7 @@ public final class FactionEngine {
      * crosses into a dimension with no claims, or after claims are removed.
      */
     public static void recompute(MinecraftServer server) {
-        if (server == null || !ModList.get().isLoaded("holdfast_factions")) return;
+        if (server == null || !FactionGate.loaded()) return;
 
         // Compute once per distinct dimension that a player is actually in, then fan out to its players.
         Map<ResourceKey<Level>, FactionMapPayload> cache = new HashMap<>();

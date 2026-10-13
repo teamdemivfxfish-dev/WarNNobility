@@ -38,7 +38,7 @@ neoForge {
 // dormant if it is absent). Antique Atlas 4 is NOT compiled against: it is reached purely by runtime
 // reflection (see domain/client/DomainOverlay), so no atlas jar is needed here.
 //
-// War 'n Taxes (modid "minecolonytax") and Holdfast Factions (modid "holdfast_factions") are likewise compileOnly
+// War 'n Taxes (modid "minecolonytax") Holdfast Factions (modid "holdfast_factions") and Easy Factions ("easy_factions") are compileOnly
 // OPTIONAL integrations: the war-outcome bridge (integration/WarTaxesBridge) and the King faction gate
 // (integration/FactionGate) only light up when those mods are present; otherwise nobility runs standalone.
 // Every reference to their classes is isolated behind a ModList.isLoaded gate so a missing jar never links.
@@ -55,6 +55,7 @@ dependencies {
             'blockui-*.jar',
             'domum-ornamentum-*.jar',
             'WarNTaxes-*.jar',
-            'holdfast_factions-*.jar'
+            'holdfast_factions-*.jar',
+            'easy_factions-*.jar'
     ])
 }

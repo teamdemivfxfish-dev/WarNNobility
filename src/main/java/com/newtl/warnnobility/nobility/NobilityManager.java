@@ -213,9 +213,9 @@ public class NobilityManager extends SavedData {
                     return Result.fail(d.name + " needs " + next.param() + " seals from fellow "
                             + ladder.get(cur).name() + "s for " + next.name() + " (has "
                             + d.supporters.size() + "). Win War 'n Taxes vassalization wars to take them.");
-                // (2) faction leadership + territory, only when Holdfast Factions is present and the gate is on.
-                // The raw ModList check (not FactionGate.loaded()) keeps FactionGate unloaded in standalone.
-                if (Config.KING_REQUIRES_FACTION.get() && ModList.get().isLoaded("holdfast_factions")) {
+                // (2) faction leadership + territory, only when Holdfast Factions or Easy Factions is
+                // present and the gate is on.
+                if (Config.KING_REQUIRES_FACTION.get() && FactionGate.loaded()) {
                     MinecraftServer srv = player.getServer();
                     if (!FactionGate.isFactionLeader(srv, d.id))
                         return Result.fail(d.name + " must be the leader of a faction to claim " + next.name() + ".");

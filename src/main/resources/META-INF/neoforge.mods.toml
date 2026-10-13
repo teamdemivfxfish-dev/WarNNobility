@@ -9,11 +9,11 @@ config = "warnnobility.mixins.json"
 
 [[mods]]
 modId = "warnnobility"
-version = "1.1.2"
+version = "1.1.3"
 displayName = "War 'n Nobility"
 authors = "NewtL"
 description = '''
-A noble-rank and vassalage progression system built on the MineColonies + War 'n Taxes + Holdfast Factions ecosystem. Win War 'n Taxes vassalization wars to take your peers as vassals and climb from outsider to emperor; lead an Holdfast Factions faction to claim the crown; plan campaigns by drawing on the War Frame board. Requires MineColonies, War 'n Taxes, and Holdfast Factions.
+A noble-rank and vassalage progression system built on the MineColonies + War 'n Taxes + Holdfast Factions ecosystem. Win War 'n Taxes vassalization wars to take your peers as vassals and climb from outsider to emperor; lead an Holdfast Factions faction to claim the crown; plan campaigns by drawing on the War Frame board. Requires MineColonies and War 'n Taxes; faction features use Holdfast Factions or Easy Factions.
 '''
 
 [[dependencies.warnnobility]]
@@ -54,6 +54,14 @@ side = "BOTH"
 # dormant when Holdfast is absent; the rest of the nobility ladder runs standalone.
 [[dependencies.warnnobility]]
 modId = "holdfast_factions"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+# OPTIONAL: the older Easy Factions does the same job when Holdfast is not installed (Holdfast wins if both are).
+[[dependencies.warnnobility]]
+modId = "easy_factions"
 type = "optional"
 versionRange = "*"
 ordering = "AFTER"

@@ -1,63 +1,83 @@
 package com.newtl.warnnobility.integration;
 
-import dev.xmat5.holdfast.server.claims.ClaimManager;
-import dev.xmat5.holdfast.server.faction.Faction;
-import dev.xmat5.holdfast.server.faction.FactionStateManager;
+import com.newtl.warnnobility.integration.easyfactions.EasyFactionsGate;
+import com.newtl.warnnobility.integration.holdfast.HoldfastGate;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.fml.ModList;
 
 import java.util.UUID;
 
 /**
- * Read-only seam into Holdfast Factions (modid {@code holdfast_factions}) for the King ({@code CROWN}) gate.
+ * Read-only seam into the faction mod for the King ({@code CROWN}) gate and War Frame allegiance.
  *
- * <p>Only exposes JDK-typed results (boolean / int / String) so that callers never name a Holdfast
- * Factions class; every reference to one lives inside a method body here and runs only after
- * {@link #loaded()} confirms the mod is present. That keeps the King gate dormant, not crashing, when
- * Holdfast Factions is absent (same optional-dependency discipline the domain map uses for MineColonies).
+ * <p>Works with either faction mod: <b>Holdfast Factions</b> (modid {@code holdfast_factions}, Xmat5's
+ * rewrite) or the older <b>Easy Factions</b> (modid {@code easy_factions}). Holdfast wins if both are
+ * installed. Their APIs are the same apart from the package, so each has a twin class under
+ * {@code integration.holdfast} / {@code integration.easyfactions}; this class names neither mod's types,
+ * so it is safe to load when no faction mod is installed, and only the class for the mod actually present
+ * ever loads. Every result here is JDK-typed (boolean / int / String).
  */
 public final class FactionGate {
 
-    public static final String MODID = "holdfast_factions";
+    public static final String HOLDFAST = "holdfast_factions";
+    public static final String EASY_FACTIONS = "easy_factions";
 
     private FactionGate() {}
 
+    private static boolean holdfast() {
+        return ModList.get().isLoaded(HOLDFAST);
+    }
+
+    /** Easy Factions is used only when Holdfast is not installed. */
+    private static boolean easyFactions() {
+        return !holdfast() && ModList.get().isLoaded(EASY_FACTIONS);
+    }
+
+    /** True if either faction mod is installed. */
     public static boolean loaded() {
-        return ModList.get().isLoaded(MODID);
+        return holdfast() || ModList.get().isLoaded(EASY_FACTIONS);
     }
 
-    /** True if {@code player} OWNS (leads) a faction. Always false when Holdfast Factions is absent. */
+    /** Which faction mod is in use, for logs and messages. */
+    public static String provider() {
+        return holdfast() ? "Holdfast Factions" : easyFactions() ? "Easy Factions" : "none";
+    }
+
+    /** True if {@code player} OWNS (leads) a faction. Always false when no faction mod is installed. */
     public static boolean isFactionLeader(MinecraftServer server, UUID player) {
-        if (!loaded() || server == null) return false;
-        return FactionStateManager.get(server).playerOwnsFaction(player);
+        if (server == null) return false;
+        if (holdfast()) return HoldfastGate.isFactionLeader(server, player);
+        if (easyFactions()) return EasyFactionsGate.isFactionLeader(server, player);
+        return false;
     }
 
-    /** Total claimed chunks held by the faction the player leads (0 if not a leader / mod absent). */
+    /** Total claimed chunks held by the faction the player leads (0 if not a leader / no faction mod). */
     public static int factionClaimCount(MinecraftServer server, UUID player) {
-        if (!loaded() || server == null) return 0;
-        Faction f = FactionStateManager.get(server).getFactionByPlayer(player);
-        if (f == null || !f.getOwner().equals(player)) return 0;
-        return ClaimManager.get(server).getFactionClaimCount(f.getName());
+        if (server == null) return 0;
+        if (holdfast()) return HoldfastGate.factionClaimCount(server, player);
+        if (easyFactions()) return EasyFactionsGate.factionClaimCount(server, player);
+        return 0;
     }
 
     /**
      * True if two players are allied for the War Frame allegiance test: the same player, or members of the
-     * same Holdfast Factions faction. False (i.e. treat as hostile/other) when EF is absent or either has no
+     * same faction. False (i.e. treat as hostile/other) when no faction mod is installed or either has no
      * faction. Used to colour units friendly vs hostile on the board.
      */
     public static boolean sameFaction(MinecraftServer server, UUID a, UUID b) {
         if (a == null || b == null) return false;
         if (a.equals(b)) return true;
-        if (!loaded() || server == null) return false;
-        Faction fa = FactionStateManager.get(server).getFactionByPlayer(a);
-        Faction fb = FactionStateManager.get(server).getFactionByPlayer(b);
-        return fa != null && fb != null && fa.getName().equals(fb.getName());
+        if (server == null) return false;
+        if (holdfast()) return HoldfastGate.sameFaction(server, a, b);
+        if (easyFactions()) return EasyFactionsGate.sameFaction(server, a, b);
+        return false;
     }
 
-    /** The name of the faction the player leads, or "(none)" if not a leader / mod absent. */
+    /** The name of the faction the player leads, or "(none)" if not a leader / no faction mod. */
     public static String factionName(MinecraftServer server, UUID player) {
-        if (!loaded() || server == null) return "(none)";
-        Faction f = FactionStateManager.get(server).getFactionByPlayer(player);
-        return (f != null && f.getOwner().equals(player)) ? f.getName() : "(none)";
+        if (server == null) return "(none)";
+        if (holdfast()) return HoldfastGate.factionName(server, player);
+        if (easyFactions()) return EasyFactionsGate.factionName(server, player);
+        return "(none)";
     }
 }
