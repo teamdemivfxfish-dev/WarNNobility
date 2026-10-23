@@ -4,6 +4,7 @@ import com.newtl.warnnobility.WarNNobility;
 import com.newtl.warnnobility.domain.DomainCommand;
 import com.newtl.warnnobility.domain.DomainEngine;
 import com.newtl.warnnobility.domain.FactionEngine;
+import com.newtl.warnnobility.domain.net.DomainNetwork;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,6 +24,7 @@ public final class DomainEvents {
 
     private static final int REFRESH_TICKS = 60;   // 3 seconds; self-updates so the atlas is near-current
     private static int ticks = 0;
+    private static boolean soon;
 
     private DomainEvents() {}
 
@@ -33,20 +35,36 @@ public final class DomainEvents {
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
-        if (++ticks % REFRESH_TICKS != 0) return;
+        if (++ticks % REFRESH_TICKS != 0 && !soon) return;
+        soon = false;
         recomputeSafe(event.getServer());
     }
 
-    /** Push fresh borders the moment a player joins, so their atlas is current before they open it. */
+    /**
+     * A player who joins or changes dimension needs the borders now. Only THAT player is resent: the
+     * rebuild happens once on the next tick however many players joined meanwhile, and everybody else
+     * is skipped because their payload has not changed (DomainNetwork keeps what each was last sent).
+     */
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer sp) recomputeSafe(sp.getServer());
+        if (event.getEntity() instanceof ServerPlayer sp) {
+            DomainNetwork.forget(sp.getUUID());
+            soon = true;
+        }
     }
 
     /** And again on a dimension change (the data is per-dimension). */
     @SubscribeEvent
     public static void onChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (event.getEntity() instanceof ServerPlayer sp) recomputeSafe(sp.getServer());
+        if (event.getEntity() instanceof ServerPlayer sp) {
+            DomainNetwork.forget(sp.getUUID());
+            soon = true;
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        DomainNetwork.forget(event.getEntity().getUUID());
     }
 
     private static void recomputeSafe(MinecraftServer server) {

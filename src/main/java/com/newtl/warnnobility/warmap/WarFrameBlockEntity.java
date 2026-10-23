@@ -241,15 +241,22 @@ public class WarFrameBlockEntity extends BlockEntity {
         return "Someone";
     }
 
+    /** Ticks between live-unit sweeps. */
+    private static final long SCAN_EVERY = 100L;
+
     /** Server tick (anchor only): free the marker when the holder leaves, logs off, or goes idle. */
     public static void serverTick(Level level, BlockPos pos, BlockState state, WarFrameBlockEntity be) {
         if (be.data == null) return;
         long now = level.getGameTime();
-        // Live-unit sweep: while the board is active and units are enabled, scan the field ~once a second
-        // and push it to nearby clients (independent of who, if anyone, holds the floor).
-        if (be.isActive() && be.data.showUnits && (now % 20L) == 0L && level instanceof ServerLevel sl) {
+        // Live-unit sweep: while the board is active and units are enabled, scan the field every few seconds
+        // and push it to nearby clients (independent of who, if anyone, holds the floor). The scan covers a
+        // 960x960 full-height box, so it only runs while somebody is standing at the board to see it
+        // (Xmat5's report: it ran every second on every board with an atlas in, watched or not).
+        if (be.isActive() && be.data.showUnits && (now % SCAN_EVERY) == 0L && level instanceof ServerLevel sl) {
             BlockPos c = Multiblock.cell(pos, be.facing(), 1, 1);
-            try { WarBoardScan.scanAndSend(sl, pos, c, be.data); } catch (Throwable ignored) {}
+            if (WarBoardScan.anyoneWatching(sl, c)) {
+                try { WarBoardScan.scanAndSend(sl, pos, c, be.data); } catch (Throwable ignored) {}
+            }
         }
         if (be.data.controller == null) return;
         if ((now & 7L) != 0L) return; // ~every 8 ticks is plenty

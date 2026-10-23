@@ -5,7 +5,6 @@ import com.newtl.warnnobility.command.NobilityCommand;
 import com.newtl.warnnobility.integration.WarTaxesBridge;
 import com.newtl.warnnobility.nobility.NobilityManager;
 import com.newtl.warnnobility.nobility.NobleData;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -15,7 +14,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -86,27 +84,11 @@ public final class ModEvents {
         }
     }
 
-    /**
-     * The reliable rank prefix in CHAT. NeoForge's chat path does not route through the NameFormat
-     * event the way Forge did, so we rebuild the line here: cancel the vanilla broadcast and send
-     * "[Title] Name: message" to everyone. Uses the raw name (getName) so it never double-prefixes.
-     */
-    @SubscribeEvent
-    public static void onServerChat(ServerChatEvent event) {
-        ServerPlayer sp = event.getPlayer();
-        MinecraftServer server = sp.getServer();
-        if (server == null) return;
-        NobilityManager m = NobilityManager.get(server);
-        NobleData d = m.getOrCreate(sp);
-        Component line = Component.empty()
-                .append(Component.literal("[" + m.rankName(d) + "] ")
-                        .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(m.rankColor(d)))))
-                .append(sp.getName())
-                .append(Component.literal(": ").withStyle(ChatFormatting.GRAY))
-                .append(event.getMessage());
-        event.setCanceled(true);
-        server.getPlayerList().broadcastSystemMessage(line, false);
-    }
+    // There used to be a ServerChatEvent handler here that cancelled every chat message and rebroadcast it
+    // as a system message with the rank in front. That broke every other chat mod on the server (rank
+    // prefixes from FTB Ranks, chat heads, signed chat, Discord bridges) and is not needed: NeoForge's
+    // Player.getDisplayName() goes through PlayerEvent.NameFormat below, and vanilla chat prints the
+    // display name, so the rank shows in chat without touching the message (Xmat5's report).
 
     /** Prefix the player's title in chat (vanilla chat uses the display name). Server-side only. */
     @SubscribeEvent

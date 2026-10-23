@@ -36,15 +36,18 @@ public final class FactionEngine {
         if (server == null || !FactionGate.loaded()) return;
 
         // Compute once per distinct dimension that a player is actually in, then fan out to its players.
+        // Sent to a player only when it differs from what they last got (see DomainNetwork).
         Map<ResourceKey<Level>, FactionMapPayload> cache = new HashMap<>();
+        Map<ResourceKey<Level>, Long> hashes = new HashMap<>();
         for (ServerPlayer p : server.getPlayerList().getPlayers()) {
             ResourceKey<Level> dim = p.level().dimension();
             FactionMapPayload payload = cache.computeIfAbsent(dim, d -> {
                 List<int[]> entries = FactionClaims.entriesForDim(server, d);
                 List<DomainEngine.Label> labels = FactionClaims.labelsForDim(server, d);
+                hashes.put(d, DomainNetwork.hash(d.location(), entries, labels));
                 return new FactionMapPayload(d.location(), entries, labels);
             });
-            DomainNetwork.toPlayer(p, payload);
+            DomainNetwork.toPlayerIfChanged(p, payload, hashes.get(dim));
         }
     }
 }

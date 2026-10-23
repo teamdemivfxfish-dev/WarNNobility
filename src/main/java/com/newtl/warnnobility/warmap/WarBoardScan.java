@@ -35,6 +35,20 @@ public final class WarBoardScan {
     private static final int MAX_UNITS = 200, MAX_DOTS = 500;
     private static final int C_FRIENDLY = 0x4A90E0, C_HOSTILE = 0xD84040, C_CITIZEN = 0xCFC8B8;
 
+    /** How close a player must stand to the board for its live sweep to run. */
+    private static final double WATCH_RADIUS = 32.0;
+
+    /** Whether any non-spectator player is near enough to the board to be looking at it. */
+    public static boolean anyoneWatching(ServerLevel level, BlockPos centre) {
+        double r2 = WATCH_RADIUS * WATCH_RADIUS;
+        for (ServerPlayer p : level.players()) {
+            if (!p.isSpectator() && p.distanceToSqr(centre.getX() + 0.5, centre.getY() + 0.5, centre.getZ() + 0.5) <= r2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void scanAndSend(ServerLevel level, BlockPos anchor, BlockPos centre, WarMapData data) {
         MinecraftServer server = level.getServer();
         double cx = data.centerX, cz = data.centerZ;

@@ -169,8 +169,9 @@ public final class DomainEngine {
             }
 
             DomainMapPayload payload = new DomainMapPayload(dimKey.location(), entries, labels, colonyMarkers);
+            long hash = DomainNetwork.hash(dimKey.location(), entries, labels, colonyMarkers);
             for (ServerPlayer p : server.getPlayerList().getPlayers()) {
-                if (p.level().dimension().equals(dimKey)) DomainNetwork.toPlayer(p, payload);
+                if (p.level().dimension().equals(dimKey)) DomainNetwork.toPlayerIfChanged(p, payload, hash);
             }
         }
         return domainCount;
